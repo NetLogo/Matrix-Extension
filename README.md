@@ -1,6 +1,6 @@
 # NetLogo matrix extension
 
-This package contains the NetLogo matrix extension.
+This package contains the NetLogo matrix extension, which provides support for a new datatype (mathematical "matrix" objects) and associated operations (like matrix multiplication) in NetLogo. 
 
 ## Using
 
