@@ -1,4 +1,4 @@
-/* Copyright (c) 2009: Forrest Stonedahl and Uri Wilensky.
+/* Copyright (c) 2009-2011: Forrest Stonedahl and Uri Wilensky.
 * 
 * Thanks to Charles Staelin for his contributions (especially the 
 * regression & forecasting primitives)!
@@ -1397,7 +1397,7 @@ public static class SwapColumns extends DefaultCommand {
             LogoList returnList = convertArrayToNestedLogoList(A.transpose().getArray());
 			LogoListBuilder result = new LogoListBuilder();
 			result.addAll( returnList ) ;
-            result.add(stats);
+            result.add(stats.toLogoList());
             return result.toLogoList();
         }
     }
