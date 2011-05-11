@@ -14,7 +14,7 @@ matrix.jar: $(SRCS) Jama-1.0.2.jar manifest.txt
 	jar cmf manifest.txt matrix.jar -C classes .
 
 Jama-1.0.2.jar:
-	curl 'http://ccl.northwestern.edu/devel/Jama-1.0.2.jar' > Jama-1.0.2.jar
+	curl -s 'http://ccl.northwestern.edu/devel/Jama-1.0.2.jar' -o Jama-1.0.2.jar
 
 matrix.zip: matrix.jar
 	rm -rf matrix
