@@ -128,7 +128,7 @@ public class MatrixExtension
   public StringBuilder exportWorld() {
     StringBuilder buffer = new StringBuilder();
     for (LogoMatrix mat : matrices.keySet()) {
-      buffer.append(org.nlogo.api.Dump.csv.encode(org.nlogo.api.Dump.extensionObject(mat, true, true, false)) + "\n");
+      buffer.append(org.nlogo.api.Dump.csv().encode(org.nlogo.api.Dump.extensionObject(mat, true, true, false)) + "\n");
     }
     return buffer;
   }
