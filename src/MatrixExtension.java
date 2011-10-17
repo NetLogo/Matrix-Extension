@@ -1,10 +1,3 @@
-/* Copyright (c) 2009-2011: Forrest Stonedahl and Uri Wilensky.
-* 
-* Thanks to Charles Staelin for his contributions (especially the 
-* regression & forecasting primitives)!
-* 
-* See the README.TXT for more information.
-*/
 package org.nlogo.extensions.matrix;
 
 import org.nlogo.api.CompilerException;
