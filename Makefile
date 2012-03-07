@@ -6,11 +6,18 @@ ifeq ($(origin NETLOGO), undefined)
   NETLOGO=../..
 endif
 
+ifeq (,$(findstring Cygwin,$(shell uname)))
+  COLON=\;
+  JAVA_HOME := `cygpath -up "$(JAVA_HOME)"`
+else
+  COLON=:
+endif
+
 SRCS=$(wildcard src/*.java)
 
 matrix.jar: $(SRCS) Jama-1.0.2.jar manifest.txt
 	mkdir -p classes
-	$(JAVA_HOME)/bin/javac -g -encoding us-ascii -source 1.5 -target 1.5 -classpath $(NETLOGO)/NetLogoLite.jar:Jama-1.0.2.jar -d classes $(SRCS)
+	$(JAVA_HOME)/bin/javac -g -encoding us-ascii -source 1.5 -target 1.5 -classpath $(NETLOGO)/NetLogoLite.jar$(COLON)Jama-1.0.2.jar -d classes $(SRCS)
 	jar cmf manifest.txt matrix.jar -C classes .
 
 Jama-1.0.2.jar:
