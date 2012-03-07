@@ -6,7 +6,7 @@ ifeq ($(origin NETLOGO), undefined)
   NETLOGO=../..
 endif
 
-ifeq ($(shell uname -o),Cygwin)
+ifneq (,$(findstring CYGWIN,$(shell uname -s)))
   COLON=\;
   JAVA_HOME := `cygpath -up "$(JAVA_HOME)"`
 else
