@@ -15,7 +15,7 @@ endif
 
 SRCS=$(wildcard src/*.java)
 
-matrix.jar matrix.jar.pack.gz: $(SRCS) Jama-1.0.2.jar manifest.txt
+matrix.jar matrix.jar.pack.gz: $(SRCS) Jama-1.0.2.jar Jama-1.0.2.jar.pack.gz manifest.txt
 	mkdir -p classes
 	$(JAVA_HOME)/bin/javac -g -encoding us-ascii -source 1.5 -target 1.5 -classpath $(NETLOGO)/NetLogoLite.jar$(COLON)Jama-1.0.2.jar -d classes $(SRCS)
 	jar cmf manifest.txt matrix.jar -C classes .
