@@ -22,7 +22,7 @@ matrix.jar matrix.jar.pack.gz: $(SRCS) Jama-1.0.2.jar Jama-1.0.2.jar.pack.gz man
 	pack200 --modification-time=latest --effort=9 --strip-debug --no-keep-file-order --unknown-attribute=strip matrix.jar.pack.gz matrix.jar
 
 Jama-1.0.2.jar Jama-1.0.2.jar.pack.gz:
-	curl -f -S 'http://ccl.northwestern.edu/devel/Jama-1.0.2.jar' -o Jama-1.0.2.jar
+	curl -f -s -S 'http://ccl.northwestern.edu/devel/Jama-1.0.2.jar' -o Jama-1.0.2.jar
 	pack200 --modification-time=latest --effort=9 --strip-debug --no-keep-file-order --unknown-attribute=strip Jama-1.0.2.jar.pack.gz Jama-1.0.2.jar
 
 matrix.zip: matrix.jar
