@@ -18,7 +18,7 @@ matrix.jar matrix.jar.pack.gz: $(SRCS) Jama-1.0.3.jar Jama-1.0.3.jar.pack.gz Net
 	pack200 --modification-time=latest --effort=9 --strip-debug --no-keep-file-order --unknown-attribute=strip matrix.jar.pack.gz matrix.jar
 
 NetLogoLite.jar:
-	curl -f -s -S 'http://ccl.northwestern.edu/netlogo/5.0.1/NetLogoLite.jar' -o NetLogoLite.jar
+	curl -f -s -S 'http://ccl.northwestern.edu/netlogo/5.0.5/NetLogoLite.jar' -o NetLogoLite.jar
 
 Jama-1.0.3.jar Jama-1.0.3.jar.pack.gz:
 	curl -f -s -S 'http://math.nist.gov/javanumerics/jama/Jama-1.0.3.jar' -o Jama-1.0.3.jar
