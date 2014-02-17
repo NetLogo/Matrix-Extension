@@ -14,9 +14,9 @@ If compilation succeeds, `matrix.jar` will be created.
 
 ## Credits
 
-The matrix extension was originally written by Forrest Stonedahl, with significant contributions from Charles Staelin (in particular, the forecast & regression primitives).
+The matrix extension was originally written by Forrest Stonedahl, with significant contributions from Charles Staelin (in particular, the forecast, regression and map primitives).
 
-The matrix extension uses (and is distributed with) the Jama matrix library (Jama-1.0.2.jar, http://math.nist.gov/javanumerics/jama/), which has been released into the public domain.
+The matrix extension uses (and is distributed with) the Jama matrix library (Jama-1.0.3.jar, http://math.nist.gov/javanumerics/jama/), which has been released into the public domain.
 
 ## Terms of Use
 
