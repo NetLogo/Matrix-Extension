@@ -12,6 +12,8 @@ import org.nlogo.api.DefaultReporter;
 import org.nlogo.api.DefaultCommand;
 import org.nlogo.api.ReporterTask;
 
+import java.util.ArrayList;
+
 public class MatrixExtension
         extends org.nlogo.api.DefaultClassManager {
 
@@ -817,32 +819,58 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.ReporterTaskType(),
-                Syntax.WildcardType()}, Syntax.WildcardType());
+        Syntax.WildcardType() | Syntax.RepeatableType()},
+              Syntax.WildcardType(), 2);
     }
 
     @Override
     public Object report(Argument args[], Context context)
             throws ExtensionException, LogoException {
-      // Get reporter task and the matrix.
+
+      // Get reporter task and the LogoMatrix or matrices from the arguments
+      // and put the LogoMatrices in an ArrayList.
       ReporterTask mapFnctn = args[0].getReporterTask();
-      LogoMatrix mat = getMatrixFromArgument(args[1]);
+      ArrayList<LogoMatrix> lmats = new ArrayList<LogoMatrix>();
+      for (int i = 1; i < args.length; i++) {
+        lmats.add(getMatrixFromArgument(args[i]));
+      }
+      // Now get the underlying double[][] matrices and put them in an
+      // ArrayList.
+      ArrayList<double[][]> dmats = new ArrayList<double[][]>();
+      for (LogoMatrix lmat : lmats) {
+        dmats.add(lmat.matrix.getArray());
+      }
+      int nmats = dmats.size();
 
+      // make sure all the underlying matrices have the same dimensions.
+      int nrows = dmats.get(0).length;
+      int ncols = dmats.get(0)[0].length;
+      for (double[][] mat : dmats) {
+        if (mat.length != nrows || mat[0].length != ncols) {
+          throw new org.nlogo.api.ExtensionException("All matrices must have the same dimmensions.");
+        }
+      }
 
-      // now get the array.
-      double[][] arry = mat.matrix.getArrayCopy();
+      // create the destination array and an array for the task arguments.
+      double[][] destmat = new double[nrows][ncols];
+      Object[] taskArgs = new Object[nmats];
+
+      // iterate through the elements of the arrays, mapping them to the 
+      // destination array.
       try {
-        for (double[] arry1 : arry) {
-          for (int j = 0; j < arry1.length; j++) {
-            Object[] Array = {arry1[j]};
-            arry1[j] = (Double) mapFnctn.report(context, Array);
+        for (int i = 0; i < nrows; i++) {
+          for (int j = 0; j < ncols; j++) {
+            for (int n = 0; n < nmats; n++) {
+              taskArgs[n] = dmats.get(n)[i][j];
+            }
+            destmat[i][j] = (Double) mapFnctn.report(context, taskArgs);
           }
         }
-        return new LogoMatrix(new Jama.Matrix(arry));
+        // return the destination array as a new LogoMatrix.
+        return new LogoMatrix(new Jama.Matrix(destmat));
       } catch (RuntimeException ex) {
         throw new ExtensionException(ex);
       }
-
-
     }
   }
 
