@@ -304,6 +304,8 @@ public class MatrixExtension
     primManager.addPrimitive("times-element-wise", new TimesElementWise());
     // matrix:map task mat => matrix object
     primManager.addPrimitive("map", new MapElements());
+    // matrix:map-in-place task mat
+    primManager.addPrimitive("map-in-place", new MapElementsInPlace());
     // matrix:plus-scalar mat value => matrix object
     primManager.addPrimitive("plus-scalar", new PlusScalar());
     // matrix:plus mat1 mat2 => matrix object
@@ -830,6 +832,8 @@ public class MatrixExtension
 
       // now get the array.
       double[][] arry = mat.matrix.getArrayCopy();
+      
+      // and iterate through the array applying the map task to the matrix copy.
       try {
         for (double[] arry1 : arry) {
           for (int j = 0; j < arry1.length; j++) {
@@ -841,8 +845,40 @@ public class MatrixExtension
       } catch (RuntimeException ex) {
         throw new ExtensionException(ex);
       }
+    }
+  }
+  
+    public static class MapElementsInPlace extends DefaultCommand {
+
+    @Override
+    public Syntax getSyntax() {
+      return Syntax.commandSyntax(new int[]{Syntax.ReporterTaskType(),
+                Syntax.WildcardType()});
+    }
+
+    @Override
+    public void perform(Argument args[], Context context)
+            throws ExtensionException, LogoException {
+      // Get reporter task and the matrix.
+      ReporterTask mapFnctn = args[0].getReporterTask();
+      LogoMatrix mat = getMatrixFromArgument(args[1]);
 
 
+      // now point to the array.
+      double[][] arry = mat.matrix.getArray();
+      
+      // and iterate through the array applying the map task to the 
+      // orignal matrix.
+      try {
+        for (double[] arry1 : arry) {
+          for (int j = 0; j < arry1.length; j++) {
+            Object[] Array = {arry1[j]};
+            arry1[j] = (Double) mapFnctn.report(context, Array);
+          }
+        }
+      } catch (RuntimeException ex) {
+        throw new ExtensionException(ex);
+      }
     }
   }
 
