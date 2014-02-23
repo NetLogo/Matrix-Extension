@@ -12,6 +12,8 @@ import org.nlogo.api.DefaultReporter;
 import org.nlogo.api.DefaultCommand;
 import org.nlogo.api.ReporterTask;
 
+import java.util.ArrayList;
+
 public class MatrixExtension
         extends org.nlogo.api.DefaultClassManager {
 
@@ -39,9 +41,8 @@ public class MatrixExtension
     private final long id;
 
     /**
-     * should be used only when doing importWorld, and
-     * we only have a reference to the Object, where the data
-     * will be defined later.
+     * should be used only when doing importWorld, and we only have a reference
+     * to the Object, where the data will be defined later.
      */
     LogoMatrix(long id) {
       matrix = null;
@@ -62,8 +63,8 @@ public class MatrixExtension
     }
 
     /**
-     * This is a very shallow "equals", see recursivelyEqual()
-     * for deep equality.
+     * This is a very shallow "equals", see recursivelyEqual() for deep
+     * equality.
      */
     @Override
     public boolean equals(Object obj) {
@@ -242,8 +243,8 @@ public class MatrixExtension
   }
 
   /**
-   * Used during import world, to recreate matrices with the
-   * correct id numbers, so all the references match up.
+   * Used during import world, to recreate matrices with the correct id numbers,
+   * so all the references match up.
    *
    * @param id
    * @return
@@ -304,8 +305,6 @@ public class MatrixExtension
     primManager.addPrimitive("times-element-wise", new TimesElementWise());
     // matrix:map task mat => matrix object
     primManager.addPrimitive("map", new MapElements());
-    // matrix:map-in-place task mat
-    primManager.addPrimitive("map-in-place", new MapElementsInPlace());
     // matrix:plus-scalar mat value => matrix object
     primManager.addPrimitive("plus-scalar", new PlusScalar());
     // matrix:plus mat1 mat2 => matrix object
@@ -357,7 +356,6 @@ public class MatrixExtension
     //Note: The Jama library that we're using can do more than just the functionality
     //      that we've exposed here.  (e.g. LU, Cholesky, SV decomposition, determinants)
     //      Motivated persons could add more primitives to access these functions...
-
   }
 
   ///
@@ -378,8 +376,8 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(),
-                Syntax.NumberType(),
-                Syntax.NumberType()},
+        Syntax.NumberType(),
+        Syntax.NumberType()},
               Syntax.WildcardType());
     }
 
@@ -404,9 +402,9 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.commandSyntax(new int[]{Syntax.WildcardType(),
-                Syntax.NumberType(),
-                Syntax.NumberType(),
-                Syntax.WildcardType()});
+        Syntax.NumberType(),
+        Syntax.NumberType(),
+        Syntax.WildcardType()});
     }
 
     @Override
@@ -429,8 +427,8 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.commandSyntax(new int[]{Syntax.WildcardType(),
-                Syntax.NumberType(),
-                Syntax.ListType()});
+        Syntax.NumberType(),
+        Syntax.ListType()});
     }
 
     @Override
@@ -458,8 +456,8 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.commandSyntax(new int[]{Syntax.WildcardType(),
-                Syntax.NumberType(),
-                Syntax.NumberType()});
+        Syntax.NumberType(),
+        Syntax.NumberType()});
     }
 
     @Override
@@ -493,8 +491,8 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.commandSyntax(new int[]{Syntax.WildcardType(),
-                Syntax.NumberType(),
-                Syntax.ListType()});
+        Syntax.NumberType(),
+        Syntax.ListType()});
     }
 
     @Override
@@ -522,8 +520,8 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.commandSyntax(new int[]{Syntax.WildcardType(),
-                Syntax.NumberType(),
-                Syntax.NumberType()});
+        Syntax.NumberType(),
+        Syntax.NumberType()});
     }
 
     @Override
@@ -557,9 +555,9 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(),
-                Syntax.NumberType(),
-                Syntax.NumberType(),
-                Syntax.WildcardType()},
+        Syntax.NumberType(),
+        Syntax.NumberType(),
+        Syntax.WildcardType()},
               Syntax.WildcardType());
     }
 
@@ -819,41 +817,70 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.ReporterTaskType(),
-                Syntax.WildcardType()}, Syntax.WildcardType());
+        Syntax.WildcardType() | Syntax.RepeatableType()},
+              Syntax.WildcardType(), 2);
     }
 
     @Override
     public Object report(Argument args[], Context context)
             throws ExtensionException, LogoException {
-      // Get reporter task and the matrix.
+
+      // Get reporter task and the LogoMatrix or matrices from the arguments
+      // and put the LogoMatrices in an ArrayList.
       ReporterTask mapFnctn = args[0].getReporterTask();
-      LogoMatrix mat = getMatrixFromArgument(args[1]);
+      ArrayList<LogoMatrix> lmats = new ArrayList<LogoMatrix>();
+      for (int i = 1; i < args.length; i++) {
+        lmats.add(getMatrixFromArgument(args[i]));
+      }
+      // Now get the underlying double[][] matrices and put them in an
+      // ArrayList.
+      ArrayList<double[][]> dmats = new ArrayList<double[][]>();
+      for (LogoMatrix lmat : lmats) {
+        dmats.add(lmat.matrix.getArray());
+      }
+      int nmats = dmats.size();
 
+      // make sure all the underlying matrices have the same dimensions.
+      int nrows = dmats.get(0).length;
+      int ncols = dmats.get(0)[0].length;
+      for (double[][] mat : dmats) {
+        if (mat.length != nrows || mat[0].length != ncols) {
+          throw new org.nlogo.api.ExtensionException("All matrices must have the same dimmensions.");
+        }
+      }
 
-      // now get the array.
-      double[][] arry = mat.matrix.getArrayCopy();
-      
-      // and iterate through the array applying the map task to the matrix copy.
+      // create the destination array and an array for the task arguments.
+      double[][] destmat = new double[nrows][ncols];
+      Object[] taskArgs = new Object[nmats];
+
+      // iterate through the elements of the arrays, mapping them to the 
+      // destination array.
       try {
-        for (double[] arry1 : arry) {
-          for (int j = 0; j < arry1.length; j++) {
-            Object[] Array = {arry1[j]};
-            arry1[j] = (Double) mapFnctn.report(context, Array);
+        for (int i = 0; i < nrows; i++) {
+          for (int j = 0; j < ncols; j++) {
+            for (int n = 0; n < nmats; n++) {
+              taskArgs[n] = dmats.get(n)[i][j];
+            }
+            destmat[i][j] = (Double) mapFnctn.report(context, taskArgs);
           }
         }
-        return new LogoMatrix(new Jama.Matrix(arry));
+        // return the destination array as a new LogoMatrix.
+        return new LogoMatrix(new Jama.Matrix(destmat));
       } catch (RuntimeException ex) {
         throw new ExtensionException(ex);
       }
     }
   }
-  
-    public static class MapElementsInPlace extends DefaultCommand {
+
+  /*
+  // Decided that an in-place primitive was not in keeping with the 
+  // NetLogo style and had no performance advantage to make it worthwhile.
+  public static class MapElementsInPlace extends DefaultCommand {
 
     @Override
     public Syntax getSyntax() {
       return Syntax.commandSyntax(new int[]{Syntax.ReporterTaskType(),
-                Syntax.WildcardType()});
+        Syntax.WildcardType()});
     }
 
     @Override
@@ -863,10 +890,9 @@ public class MatrixExtension
       ReporterTask mapFnctn = args[0].getReporterTask();
       LogoMatrix mat = getMatrixFromArgument(args[1]);
 
-
       // now point to the array.
       double[][] arry = mat.matrix.getArray();
-      
+
       // and iterate through the array applying the map task to the 
       // orignal matrix.
       try {
@@ -881,6 +907,7 @@ public class MatrixExtension
       }
     }
   }
+  */
 
   public static class PlusScalar extends DefaultReporter {
 
@@ -1050,7 +1077,7 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.NumberType(),
-                Syntax.NumberType(), Syntax.NumberType(), Syntax.NumberType()},
+        Syntax.NumberType(), Syntax.NumberType(), Syntax.NumberType()},
               Syntax.WildcardType());
     }
 
@@ -1096,7 +1123,7 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(),
-                Syntax.NumberType()},
+        Syntax.NumberType()},
               Syntax.ListType());
     }
 
@@ -1121,7 +1148,7 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(),
-                Syntax.NumberType()},
+        Syntax.NumberType()},
               Syntax.ListType());
     }
 
