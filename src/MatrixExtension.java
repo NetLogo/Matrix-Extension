@@ -10,7 +10,8 @@ import org.nlogo.api.LogoList;
 import org.nlogo.api.LogoListBuilder;
 import org.nlogo.api.DefaultReporter;
 import org.nlogo.api.DefaultCommand;
-import org.nlogo.api.ReporterTask;
+//import org.nlogo.api.ReporterTask;
+import org.nlogo.nvm.ReporterTask;
 
 import java.util.ArrayList;
 
@@ -825,13 +826,29 @@ public class MatrixExtension
     public Object report(Argument args[], Context context)
             throws ExtensionException, LogoException {
 
-      // Get reporter task and the LogoMatrix or matrices from the arguments
-      // and put the LogoMatrices in an ArrayList.
-      ReporterTask mapFnctn = args[0].getReporterTask();
+      // Get reporter task and the LogoMatrices from the map arguments
+      // and put the LogoMatrices in an ArrayList.  Note that we get the task
+      // as a nvm.ReporterTask rather than a api.ReporterTask so that we can
+      // apply the formals() method below. (Note the imports, above.)
+      ReporterTask mapFnctn = (ReporterTask)args[0].getReporterTask();
       ArrayList<LogoMatrix> lmats = new ArrayList<LogoMatrix>();
       for (int i = 1; i < args.length; i++) {
         lmats.add(getMatrixFromArgument(args[i]));
       }
+      
+      // Check to make sure that the number of matrices supplied is at least
+      // as many as is expected by the task.  mapFnctn.formals() yields an array,
+      // the length of which is the number of matrices expected by the task.
+      // E.g., if the task definition contains a reference to ?3 in the mapping,
+      // the task expects at least three matrices.  Throw an exception if 
+      // there are fewer matrices than expected.  (There is no problem if 
+      // there are more. They just will not be used by the mapping.)
+      if (mapFnctn.formals().length > lmats.size()) {
+        throw new org.nlogo.api.ExtensionException("The definition of the mapping task refers to matrix " + 
+                mapFnctn.formals().length + " but only " + lmats.size() +
+                " matrices were supplied.");
+      }
+      
       // Now get the underlying double[][] matrices and put them in an
       // ArrayList.
       ArrayList<double[][]> dmats = new ArrayList<double[][]>();
@@ -845,7 +862,9 @@ public class MatrixExtension
       int ncols = dmats.get(0)[0].length;
       for (double[][] mat : dmats) {
         if (mat.length != nrows || mat[0].length != ncols) {
-          throw new org.nlogo.api.ExtensionException("All matrices must have the same dimmensions.");
+          throw new org.nlogo.api.ExtensionException("All matrices must have the same dimmensions: "
+                  + "the first was " + nrows + "x" + ncols 
+                  + " and another was " + mat.length + "x" + mat[0].length);
         }
       }
 
@@ -854,7 +873,7 @@ public class MatrixExtension
       Object[] taskArgs = new Object[nmats];
 
       // iterate through the elements of the arrays, mapping them to the 
-      // destination array.
+      // destination array. Catch any errors that occur.
       try {
         for (int i = 0; i < nrows; i++) {
           for (int j = 0; j < ncols; j++) {
