@@ -846,9 +846,9 @@ public class MatrixExtension
       // there are fewer matrices than expected.  (There is no problem if 
       // there are more. They just will not be used by the mapping.)
       if (mapFnctn.formals().length > lmats.size()) {
-        throw new org.nlogo.api.ExtensionException("The definition of the mapping task refers to matrix " + 
-                mapFnctn.formals().length + " but only " + lmats.size() +
-                " matrices were supplied.");
+        throw new org.nlogo.api.ExtensionException("Task expected " + 
+                mapFnctn.formals().length + " matrix inputs but only got " +
+				lmats.size() + ".");
       }
       
       // Now get the underlying double[][] matrices and put them in an
@@ -866,7 +866,7 @@ public class MatrixExtension
         if (mat.length != nrows || mat[0].length != ncols) {
           throw new org.nlogo.api.ExtensionException("All matrices must have the same dimmensions: "
                   + "the first was " + nrows + "x" + ncols 
-                  + " and another was " + mat.length + "x" + mat[0].length);
+                  + " and another was " + mat.length + "x" + mat[0].length + ".");
         }
       }
 
