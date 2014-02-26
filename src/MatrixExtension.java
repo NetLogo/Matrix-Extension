@@ -864,7 +864,7 @@ public class MatrixExtension
         if (mat.length != nrows || mat[0].length != ncols) {
           throw new org.nlogo.api.ExtensionException("All matrices must have the same dimmensions: "
                   + "the first was " + nrows + "x" + ncols 
-                  + " and another was " + mat.length + "x" + mat[0].length);
+                  + " and another was " + mat.length + "x" + mat[0].length + ".");
         }
       }
 
