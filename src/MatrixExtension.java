@@ -777,17 +777,40 @@ public class MatrixExtension
 
     @Override
     public Syntax getSyntax() {
-      return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.WildcardType()},
+      return Syntax.reporterSyntax(new int[]{
+              Syntax.WildcardType() | Syntax.NumberType(),
+              Syntax.WildcardType() | Syntax.NumberType() | Syntax.RepeatableType()},
               Syntax.WildcardType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
             throws ExtensionException, LogoException {
-      LogoMatrix mat = getMatrixFromArgument(args[0]);
-      LogoMatrix mat2 = getMatrixFromArgument(args[1]);
+      double scalar = 1.0;
+      Jama.Matrix result = null;
       try {
-        return new LogoMatrix(mat.matrix.times(mat2.matrix));
+        for (Argument arg : args) {
+          Object obj = arg.get();
+          if (obj instanceof LogoMatrix) {
+            if (result == null) {
+                result = ((LogoMatrix) obj).matrix;
+            } else {
+                result = result.times(((LogoMatrix) obj).matrix);
+            }
+          } else if (obj instanceof Double) {
+            scalar *= (Double) obj;
+          } else {
+            throw new IllegalArgumentException("matrix:times only takes matrices and numbers as inputs.");
+          }
+        }
+        if (result == null) {
+          throw new IllegalArgumentException("You must supply matrix:times with at least one matrix.");
+        }
+        if (scalar != 1.0) {
+          // Note that result may still be the first argument, so we can't use timesEquals
+          result = result.times(scalar);
+        }
+        return new LogoMatrix(result);
       } catch (IllegalArgumentException ex) {
         throw new ExtensionException(ex);
       }

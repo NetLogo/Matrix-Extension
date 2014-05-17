@@ -15,6 +15,13 @@ Matrix
   (word matrix:times glob1 glob3) => "{{matrix:  [ [ 1 -2 3 ][ 4 -5 10 ] ]}}"
   matrix:to-row-list (matrix:plus glob2 glob3) => [[2 0 0] [0 0 0] [0 0 2]]
 
+matrix-times
+  extensions [ matrix ]
+  O> set glob1 matrix:from-row-list [[1 2 3] [4 5 6] [7 8 9]]
+  (word (matrix:times 2 glob1 glob1)) => "{{matrix:  [ [ 60 72 84 ][ 132 162 192 ][ 204 252 300 ] ]}}"
+  (word (matrix:times 2 glob1 glob1)) => "{{matrix:  [ [ 60 72 84 ][ 132 162 192 ][ 204 252 300 ] ]}}"
+  (word (matrix:times matrix:make-identity 1 2 3)) => "{{matrix:  [ [ 6 ] ]}}"
+
 Dimensions
   extensions [matrix]
   matrix:dimensions matrix:from-row-list [[1 2 3] [4 5 6]] => [2 3]
