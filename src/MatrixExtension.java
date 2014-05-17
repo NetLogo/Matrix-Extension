@@ -914,27 +914,31 @@ public class MatrixExtension
 
     @Override
     public Syntax getSyntax() {
-      return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.WildcardType()},
+      return Syntax.reporterSyntax(new int[]{
+              Syntax.WildcardType(),
+              Syntax.WildcardType() | Syntax.RepeatableType()},
               Syntax.WildcardType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
             throws ExtensionException, LogoException {
-      LogoMatrix mat = getMatrixFromArgument(args[0]);
-      LogoMatrix mat2 = getMatrixFromArgument(args[1]);
-      int numrows = mat.matrix.getRowDimension();
-      int numcols = mat.matrix.getColumnDimension();
-      int numrows2 = mat2.matrix.getRowDimension();
-      int numcols2 = mat2.matrix.getColumnDimension();
-
-      if (numrows != numrows2 || numcols != numcols2) {
-        throw new org.nlogo.api.ExtensionException("Can not add matrices with different dimensions: "
-                + numrows + "x" + numcols + " vs. " + numrows2 + "x"
-                + numcols2);
+      Jama.Matrix res = getMatrixFromArgument(args[0]).matrix.copy();
+      for (int i = 1; i < args.length; i++) {
+        Jama.Matrix addIn = getMatrixFromArgument(args[i]).matrix;
+        try {
+          res.plusEquals(addIn);
+        } catch (IllegalArgumentException e) {
+          int numrows = res.getRowDimension();
+          int numcols = res.getColumnDimension();
+          int numrows2 = addIn.getRowDimension();
+          int numcols2 = addIn.getColumnDimension();
+          throw new org.nlogo.api.ExtensionException("Can not add matrices with different dimensions: "
+                  + numrows + "x" + numcols + " vs. " + numrows2 + "x"
+                  + numcols2);
+        }
       }
-
-      return new LogoMatrix(mat.matrix.plus(mat2.matrix));
+      return new LogoMatrix(res);
     }
   }
 
