@@ -300,7 +300,7 @@ public class MatrixExtension
     primManager.addPrimitive("pretty-print-text", new PrettyPrintText());
 
     // matrix:times-scalar mat factor => matrix object
-    primManager.addPrimitive("times-scalar", new TimesScalar());
+    primManager.addPrimitive("times-scalar", new Times());
     // matrix:times mat1 mat2 => matrix object
     primManager.addPrimitive("times", new Times());
     // matrix:times-element-wise mat1 mat2 => matrix object
@@ -753,23 +753,6 @@ public class MatrixExtension
       }
       buf.append("]");
       return buf.toString();
-    }
-  }
-
-  public static class TimesScalar extends DefaultReporter {
-
-    @Override
-    public Syntax getSyntax() {
-      return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.NumberType()},
-              Syntax.WildcardType());
-    }
-
-    @Override
-    public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
-      LogoMatrix mat = getMatrixFromArgument(args[0]);
-      double d = args[1].getDoubleValue();
-      return new LogoMatrix(mat.matrix.times(d));
     }
   }
 
