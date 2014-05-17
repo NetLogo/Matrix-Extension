@@ -311,6 +311,7 @@ public class MatrixExtension
     primManager.addPrimitive("plus-scalar", new PlusScalar());
     // matrix:plus mat1 mat2 => matrix object
     primManager.addPrimitive("plus", new Plus());
+    primManager.addPrimitive("minus", new Minus());
     // matrix:det mat => number
     primManager.addPrimitive("det", new Det());
     // matrix:rank mat => number
@@ -934,6 +935,37 @@ public class MatrixExtension
           int numrows2 = addIn.getRowDimension();
           int numcols2 = addIn.getColumnDimension();
           throw new org.nlogo.api.ExtensionException("Can not add matrices with different dimensions: "
+                  + numrows + "x" + numcols + " vs. " + numrows2 + "x"
+                  + numcols2);
+        }
+      }
+      return new LogoMatrix(res);
+    }
+  }
+
+  public static class Minus extends DefaultReporter {
+    @Override
+    public Syntax getSyntax() {
+      return Syntax.reporterSyntax(new int[]{
+              Syntax.WildcardType(),
+              Syntax.WildcardType() | Syntax.RepeatableType()},
+              Syntax.WildcardType());
+    }
+
+    @Override
+    public Object report(Argument args[], Context context)
+            throws ExtensionException, LogoException {
+      Jama.Matrix res = getMatrixFromArgument(args[0]).matrix.copy();
+      for (int i = 1; i < args.length; i++) {
+        Jama.Matrix addIn = getMatrixFromArgument(args[i]).matrix;
+        try {
+          res.minusEquals(addIn);
+        } catch (IllegalArgumentException e) {
+          int numrows = res.getRowDimension();
+          int numcols = res.getColumnDimension();
+          int numrows2 = addIn.getRowDimension();
+          int numcols2 = addIn.getColumnDimension();
+          throw new org.nlogo.api.ExtensionException("Can not subtract matrices with different dimensions: "
                   + numrows + "x" + numcols + " vs. " + numrows2 + "x"
                   + numcols2);
         }

@@ -27,6 +27,12 @@ matrix-plus
   O> set glob1 matrix:from-row-list [[1 2 3] [4 5 6] [7 8 9]]
   (word (matrix:plus glob1 glob1 glob1)) => "{{matrix:  [ [ 3 6 9 ][ 12 15 18 ][ 21 24 27 ] ]}}"
 
+matrix-minus
+  extensions [ matrix ]
+  O> set glob1 matrix:from-row-list [[1 2 3] [4 5 6] [7 8 9]]
+  (word matrix:minus glob1 glob1) => "{{matrix:  [ [ 0 0 0 ][ 0 0 0 ][ 0 0 0 ] ]}}"
+  (word (matrix:minus glob1 glob1 glob1)) => "{{matrix:  [ [ -1 -2 -3 ][ -4 -5 -6 ][ -7 -8 -9 ] ]}}"
+
 Dimensions
   extensions [matrix]
   matrix:dimensions matrix:from-row-list [[1 2 3] [4 5 6]] => [2 3]
