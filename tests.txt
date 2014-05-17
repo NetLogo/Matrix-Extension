@@ -23,17 +23,25 @@ matrix-times
   (word (matrix:times matrix:make-identity 1 2 3)) => "{{matrix:  [ [ 6 ] ]}}"
   O> set glob2 matrix:from-row-list [[ 6 ]]
   (word (list matrix:times glob2 glob2 glob2)) => "[{{matrix:  [ [ 36 ] ]}} {{matrix:  [ [ 6 ] ]}}]"
+  (word (2 matrix:* glob1 matrix:* glob1)) => "{{matrix:  [ [ 60 72 84 ][ 132 162 192 ][ 204 252 300 ] ]}}"
 
 matrix-plus
   extensions [ matrix ]
   O> set glob1 matrix:from-row-list [[1 2 3] [4 5 6] [7 8 9]]
   (word (matrix:plus 1 glob1 glob1 glob1)) => "{{matrix:  [ [ 4 7 10 ][ 13 16 19 ][ 22 25 28 ] ]}}"
+  (word (matrix:plus glob1 glob1 glob1)) => "{{matrix:  [ [ 3 6 9 ][ 12 15 18 ][ 21 24 27 ] ]}}"
+  (word (matrix:plus glob1 glob1 glob1)) => "{{matrix:  [ [ 3 6 9 ][ 12 15 18 ][ 21 24 27 ] ]}}"
+  (word (glob1 matrix:+ glob1 matrix:+ glob1)) => "{{matrix:  [ [ 3 6 9 ][ 12 15 18 ][ 21 24 27 ] ]}}"
 
 matrix-minus
   extensions [ matrix ]
   O> set glob1 matrix:from-row-list [[1 2 3] [4 5 6] [7 8 9]]
   (word matrix:minus glob1 glob1) => "{{matrix:  [ [ 0 0 0 ][ 0 0 0 ][ 0 0 0 ] ]}}"
   (word (matrix:minus glob1 glob1 glob1)) => "{{matrix:  [ [ -1 -2 -3 ][ -4 -5 -6 ][ -7 -8 -9 ] ]}}"
+  (word (glob1 matrix:- glob1 matrix:- glob1)) => "{{matrix:  [ [ -1 -2 -3 ][ -4 -5 -6 ][ -7 -8 -9 ] ]}}"
+
+matrix:precedence
+  extensions
 
 matrix-times-element-wise
   extensions [ matrix ]

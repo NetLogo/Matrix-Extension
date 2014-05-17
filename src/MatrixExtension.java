@@ -303,6 +303,7 @@ public class MatrixExtension
     primManager.addPrimitive("times-scalar", new Times());
     // matrix:times mat1 mat2 => matrix object
     primManager.addPrimitive("times", new Times());
+    primManager.addPrimitive("*", new TimesInfix());
     // matrix:times-element-wise mat1 mat2 => matrix object
     primManager.addPrimitive("times-element-wise", new TimesElementWise());
     // matrix:map task mat => matrix object
@@ -311,7 +312,9 @@ public class MatrixExtension
     primManager.addPrimitive("plus-scalar", new PlusScalar());
     // matrix:plus mat1 mat2 => matrix object
     primManager.addPrimitive("plus", new Plus());
+    primManager.addPrimitive("+", new PlusInfix());
     primManager.addPrimitive("minus", new Minus());
+    primManager.addPrimitive("-", new MinusInfix());
     // matrix:det mat => number
     primManager.addPrimitive("det", new Det());
     // matrix:rank mat => number
@@ -762,14 +765,18 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{
-              Syntax.WildcardType() | Syntax.NumberType(),
-              Syntax.WildcardType() | Syntax.NumberType() | Syntax.RepeatableType()},
+              Syntax.WildcardType(),
+              Syntax.WildcardType() | Syntax.RepeatableType()},
               Syntax.WildcardType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
             throws ExtensionException, LogoException {
+      return times(args);
+    }
+
+    public static LogoMatrix times(Argument args[]) throws ExtensionException, LogoException {
       double scalar = 1.0;
       Jama.Matrix result = null;
       try {
@@ -777,9 +784,9 @@ public class MatrixExtension
           Object obj = arg.get();
           if (obj instanceof LogoMatrix) {
             if (result == null) {
-                result = ((LogoMatrix) obj).matrix;
+              result = ((LogoMatrix) obj).matrix;
             } else {
-                result = result.times(((LogoMatrix) obj).matrix);
+              result = result.times(((LogoMatrix) obj).matrix);
             }
           } else if (obj instanceof Double) {
             scalar *= (Double) obj;
@@ -798,6 +805,23 @@ public class MatrixExtension
       } catch (IllegalArgumentException ex) {
         throw new ExtensionException(ex);
       }
+    }
+  }
+
+  public static class TimesInfix extends DefaultReporter {
+
+    @Override
+    public Syntax getSyntax() {
+      return Syntax.reporterSyntax(Syntax.WildcardType(), new int[]{
+              Syntax.WildcardType()},
+              Syntax.WildcardType(),
+              Syntax.NormalPrecedence() - 2);
+    }
+
+    @Override
+    public Object report(Argument args[], Context context)
+            throws ExtensionException, LogoException {
+      return Times.times(args);
     }
   }
 
@@ -930,6 +954,10 @@ public class MatrixExtension
     @Override
     public Object report(Argument args[], Context context)
             throws ExtensionException, LogoException {
+      return plus(args);
+    }
+
+    public static LogoMatrix plus(Argument args[]) throws ExtensionException, LogoException {
 	  double scalar = 0.0;
 	  Jama.Matrix result = null;
 
@@ -966,6 +994,23 @@ public class MatrixExtension
     }
   }
 
+  public static class PlusInfix extends DefaultReporter {
+
+    @Override
+    public Syntax getSyntax() {
+      return Syntax.reporterSyntax(Syntax.WildcardType(), new int[]{
+              Syntax.WildcardType()},
+              Syntax.WildcardType(),
+              Syntax.NormalPrecedence() - 3);
+    }
+
+    @Override
+    public Object report(Argument args[], Context context)
+            throws ExtensionException, LogoException {
+      return Plus.plus(args);
+    }
+  }
+
   public static class Minus extends DefaultReporter {
     @Override
     public Syntax getSyntax() {
@@ -978,6 +1023,10 @@ public class MatrixExtension
     @Override
     public Object report(Argument args[], Context context)
             throws ExtensionException, LogoException {
+      return minus(args);
+    }
+
+    public static LogoMatrix minus(Argument args[]) throws ExtensionException, LogoException {
       Jama.Matrix res = getMatrixFromArgument(args[0]).matrix.copy();
       for (int i = 1; i < args.length; i++) {
         Jama.Matrix addIn = getMatrixFromArgument(args[i]).matrix;
@@ -994,6 +1043,23 @@ public class MatrixExtension
         }
       }
       return new LogoMatrix(res);
+    }
+  }
+
+  public static class MinusInfix extends DefaultReporter {
+
+    @Override
+    public Syntax getSyntax() {
+      return Syntax.reporterSyntax(Syntax.WildcardType(), new int[]{
+              Syntax.WildcardType()},
+              Syntax.WildcardType(),
+              Syntax.NormalPrecedence() - 3);
+    }
+
+    @Override
+    public Object report(Argument args[], Context context)
+            throws ExtensionException, LogoException {
+      return Minus.minus(args);
     }
   }
 
