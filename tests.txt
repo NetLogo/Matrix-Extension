@@ -21,6 +21,8 @@ matrix-times
   (word (matrix:times 2 glob1 glob1)) => "{{matrix:  [ [ 60 72 84 ][ 132 162 192 ][ 204 252 300 ] ]}}"
   (word (matrix:times 2 glob1 glob1)) => "{{matrix:  [ [ 60 72 84 ][ 132 162 192 ][ 204 252 300 ] ]}}"
   (word (matrix:times matrix:make-identity 1 2 3)) => "{{matrix:  [ [ 6 ] ]}}"
+  O> set glob2 matrix:from-row-list [[ 6 ]]
+  (word (list matrix:times glob2 glob2 glob2)) => "[{{matrix:  [ [ 36 ] ]}} {{matrix:  [ [ 6 ] ]}}]"
 
 matrix-plus
   extensions [ matrix ]
