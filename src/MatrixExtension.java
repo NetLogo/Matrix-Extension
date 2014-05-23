@@ -805,17 +805,23 @@ public class MatrixExtension
 
     @Override
     public Syntax getSyntax() {
-      return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.WildcardType()},
+      return Syntax.reporterSyntax(new int[]{
+		  	  Syntax.WildcardType(),
+			  Syntax.WildcardType() | Syntax.RepeatableType()},
               Syntax.WildcardType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
             throws ExtensionException, LogoException {
-      LogoMatrix mat = getMatrixFromArgument(args[0]);
-      LogoMatrix mat2 = getMatrixFromArgument(args[1]);
+      LogoMatrix first = getMatrixFromArgument(args[0]);
+	  Jama.Matrix result = first.matrix.copy();
       try {
-        return new LogoMatrix(mat.matrix.arrayTimes(mat2.matrix));
+		for (int i = 1; i < args.length; i++) {
+		  LogoMatrix mat = getMatrixFromArgument(args[i]);
+		  result.arrayTimesEquals(mat.matrix);
+		}
+        return new LogoMatrix(result);
       } catch (IllegalArgumentException ex) {
         throw new ExtensionException(ex);
       }

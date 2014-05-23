@@ -35,6 +35,13 @@ matrix-minus
   (word matrix:minus glob1 glob1) => "{{matrix:  [ [ 0 0 0 ][ 0 0 0 ][ 0 0 0 ] ]}}"
   (word (matrix:minus glob1 glob1 glob1)) => "{{matrix:  [ [ -1 -2 -3 ][ -4 -5 -6 ][ -7 -8 -9 ] ]}}"
 
+matrix-times-element-wise
+  extensions [ matrix ]
+  O> set glob1 matrix:from-row-list [[1 2 3] [1 2 3]]
+  (word (matrix:times-element-wise glob1 glob1 glob1)) => "{{matrix:  [ [ 1 8 27 ][ 1 8 27 ] ]}}"
+  O> set glob2 matrix:from-row-list [[ 6 ]]
+  (word (list matrix:times-element-wise glob2 glob2 glob2)) => "[{{matrix:  [ [ 36 ] ]}} {{matrix:  [ [ 6 ] ]}}]"
+
 Dimensions
   extensions [matrix]
   matrix:dimensions matrix:from-row-list [[1 2 3] [4 5 6]] => [2 3]
