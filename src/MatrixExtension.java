@@ -930,22 +930,39 @@ public class MatrixExtension
     @Override
     public Object report(Argument args[], Context context)
             throws ExtensionException, LogoException {
-      Jama.Matrix res = getMatrixFromArgument(args[0]).matrix.copy();
-      for (int i = 1; i < args.length; i++) {
-        Jama.Matrix addIn = getMatrixFromArgument(args[i]).matrix;
-        try {
-          res.plusEquals(addIn);
-        } catch (IllegalArgumentException e) {
-          int numrows = res.getRowDimension();
-          int numcols = res.getColumnDimension();
-          int numrows2 = addIn.getRowDimension();
-          int numcols2 = addIn.getColumnDimension();
-          throw new org.nlogo.api.ExtensionException("Can not add matrices with different dimensions: "
-                  + numrows + "x" + numcols + " vs. " + numrows2 + "x"
-                  + numcols2);
-        }
-      }
-      return new LogoMatrix(res);
+	  double scalar = 0.0;
+	  Jama.Matrix result = null;
+
+	  for (Argument arg : args) {
+		Object obj  = arg.get();
+		if (obj instanceof LogoMatrix) {
+		  if (result == null) {
+			result = ((LogoMatrix) obj).matrix.copy();
+		  } else {
+			Jama.Matrix addIn = ((LogoMatrix) obj).matrix;
+			try {
+			  result = result.plusEquals(addIn);
+			} catch (IllegalArgumentException e) {
+			  int numrows = result.getRowDimension();
+			  int numcols = result.getColumnDimension();
+			  int numrows2 = addIn.getRowDimension();
+			  int numcols2 = addIn.getColumnDimension();
+			  throw new org.nlogo.api.ExtensionException("Cannot add matrices with different dimensions: "
+				  + numrows + "x" + numcols + " vs. " + numrows2 + "x"
+				  + numcols2);
+			}
+		  }
+		} else if (obj instanceof Double) {
+		  scalar += arg.getDoubleValue();
+		} else {
+		  throw new IllegalArgumentException("matrix:plus only takes matrices and numbers as inputs.");
+		}
+	  }
+	  if (result == null) {
+		throw new IllegalArgumentException("You must supply matrix:plus with at least one matrix.");
+	  }
+	  result.plusEquals(new Jama.Matrix(result.getRowDimension(), result.getColumnDimension(), scalar));
+      return new LogoMatrix(result);
     }
   }
 
