@@ -300,7 +300,7 @@ public class MatrixExtension
     primManager.addPrimitive("pretty-print-text", new PrettyPrintText());
 
     // matrix:times-scalar mat factor => matrix object
-    primManager.addPrimitive("times-scalar", new Times());
+    primManager.addPrimitive("times-scalar", new TimesScalar());
     // matrix:times mat1 mat2 => matrix object
     primManager.addPrimitive("times", new Times());
     primManager.addPrimitive("*", new TimesInfix());
@@ -760,6 +760,17 @@ public class MatrixExtension
     }
   }
 
+  public static class TimesScalar extends DefaultReporter {
+    @Override 
+    public Syntax getSyntax() {
+      return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.NumberType()}, Syntax.WildcardType());
+    }
+    @Override
+    public Object report(Argument args[], Context context) throws ExtensionException, LogoException {
+      return Times.times(args);
+    }
+  }
+
   public static class Times extends DefaultReporter {
 
     @Override
@@ -933,11 +944,7 @@ public class MatrixExtension
     @Override
     public Object report(Argument args[], Context context)
             throws ExtensionException, LogoException {
-      LogoMatrix mat = getMatrixFromArgument(args[0]);
-      double d = args[1].getDoubleValue();
-      // no doubt could be more efficient
-      return new LogoMatrix(mat.matrix.plus(
-              new Jama.Matrix(mat.matrix.getRowDimension(), mat.matrix.getColumnDimension(), d)));
+      return Plus.plus(args);
     }
   }
 
