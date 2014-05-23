@@ -10,13 +10,12 @@ import org.nlogo.api.LogoList;
 import org.nlogo.api.LogoListBuilder;
 import org.nlogo.api.DefaultReporter;
 import org.nlogo.api.DefaultCommand;
-//import org.nlogo.api.ReporterTask;
 import org.nlogo.nvm.ReporterTask;
 
 import java.util.ArrayList;
 
 public class MatrixExtension
-        extends org.nlogo.api.DefaultClassManager {
+    extends org.nlogo.api.DefaultClassManager {
 
   @Override
   public java.util.List<String> additionalJars() {
@@ -30,9 +29,9 @@ public class MatrixExtension
   private static long next = 0;
 
   private static class LogoMatrix
-          // new NetLogo data types defined by extensions must implement
-          // this interface
-          implements org.nlogo.api.ExtensionObject {
+      // new NetLogo data types defined by extensions must implement
+      // this interface
+      implements org.nlogo.api.ExtensionObject {
     // NOTE: Because the Jama.Matrix does not support resizing/reshaping
     //       the underlying array, it turned out to be simpler to
     //       store the matrix in a member field, rather than have LogoMatrix
@@ -85,11 +84,11 @@ public class MatrixExtension
       if (!(reference && exporting)) {
         double[][] dArray = this.matrix.getArray();
         buf.append(" [ ");
-        for (double[] dArray1 : dArray) {
+        for (double[] row : dArray) {
           buf.append("[");
-          for (int j = 0; j < dArray1.length; j++) {
+          for (double elem : row) {
             buf.append(" ");
-            buf.append(org.nlogo.api.Dump.number(dArray1[j]));
+            buf.append(org.nlogo.api.Dump.number(elem));
           }
           buf.append(" ]");
         }
@@ -132,14 +131,14 @@ public class MatrixExtension
   public StringBuilder exportWorld() {
     StringBuilder buffer = new StringBuilder();
     for (LogoMatrix mat : matrices.keySet()) {
-      buffer.append(org.nlogo.api.Dump.csv().encode(org.nlogo.api.Dump.extensionObject(mat, true, true, false))).append("\n");
+      buffer.append(org.nlogo.api.Dump.csv().encode(org.nlogo.api.Dump.extensionObject(mat, true, true, false)) + "\n");
     }
     return buffer;
   }
 
   @Override
   public void importWorld(java.util.List<String[]> lines, org.nlogo.api.ExtensionManager reader,
-          org.nlogo.api.ImportErrorHandler handler) {
+                          org.nlogo.api.ImportErrorHandler handler) {
     for (String[] line : lines) {
       try {
         reader.readFromString(line[0]);
@@ -151,8 +150,8 @@ public class MatrixExtension
 
   @Override
   public org.nlogo.api.ExtensionObject readExtensionObject(org.nlogo.api.ExtensionManager reader,
-          String typeName, String value)
-          throws CompilerException, ExtensionException {
+                                                           String typeName, String value)
+      throws CompilerException, ExtensionException {
     String[] s = value.split(":");
     long id = Long.parseLong(s[0]);
     LogoMatrix mat = getOrCreateMatrixFromId(id);
@@ -224,10 +223,10 @@ public class MatrixExtension
 
   private static LogoList convertArrayToNestedLogoList(double[][] dArray) {
     LogoListBuilder lst = new LogoListBuilder();
-    for (double[] dArray1 : dArray) {
+    for (double[] row : dArray) {
       LogoListBuilder rowLst = new LogoListBuilder();
-      for (int j = 0; j < dArray1.length; j++) {
-        rowLst.add(Double.valueOf(dArray1[j]));
+      for (double elem : row) {
+        rowLst.add(Double.valueOf(elem));
       }
       lst.add(rowLst.toLogoList());
     }
@@ -236,9 +235,9 @@ public class MatrixExtension
 
   private static LogoList convertArrayToSimpleLogoList(double[][] dArray) {
     LogoListBuilder lst = new LogoListBuilder();
-    for (double[] dArray1 : dArray) {
-      for (int j = 0; j < dArray1.length; j++) {
-        lst.add(Double.valueOf(dArray1[j]));
+    for (double[] row : dArray) {
+      for (double elem : row) {
+        lst.add(Double.valueOf(elem));
       }
     }
     return lst.toLogoList();
@@ -369,11 +368,11 @@ public class MatrixExtension
   // Convenience method, to extract a Matrix object from an Argument.
   // It serves a similar purpose to args[x].getString(), or args[x].getList().
   private static LogoMatrix getMatrixFromArgument(Argument arg)
-          throws ExtensionException, LogoException {
+      throws ExtensionException, LogoException {
     Object obj = arg.get();
     if (!(obj instanceof LogoMatrix)) {
       throw new org.nlogo.api.ExtensionException("not a matrix: "
-              + org.nlogo.api.Dump.logoObject(obj));
+          + org.nlogo.api.Dump.logoObject(obj));
     }
     return (LogoMatrix) obj;
   }
@@ -383,22 +382,22 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(),
-                Syntax.NumberType(),
-                Syntax.NumberType()},
-              Syntax.WildcardType());
+          Syntax.NumberType(),
+          Syntax.NumberType()},
+          Syntax.WildcardType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       int rowIndex = args[1].getIntValue();
       int colIndex = args[2].getIntValue();
 
       if (rowIndex < 0 || rowIndex >= mat.matrix.getRowDimension()
-              || colIndex < 0 || colIndex >= mat.matrix.getColumnDimension()) {
+          || colIndex < 0 || colIndex >= mat.matrix.getColumnDimension()) {
         throw new org.nlogo.api.ExtensionException("(" + rowIndex + "," + colIndex + ") are not valid indices for a matrix with dimensions  "
-                + mat.matrix.getRowDimension() + "x" + mat.matrix.getColumnDimension());
+            + mat.matrix.getRowDimension() + "x" + mat.matrix.getColumnDimension());
       }
       return mat.matrix.get(rowIndex, colIndex);
     }
@@ -409,21 +408,21 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.commandSyntax(new int[]{Syntax.WildcardType(),
-                Syntax.NumberType(),
-                Syntax.NumberType(),
-                Syntax.WildcardType()});
+          Syntax.NumberType(),
+          Syntax.NumberType(),
+          Syntax.WildcardType()});
     }
 
     @Override
     public void perform(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       int rowIndex = args[1].getIntValue();
       int colIndex = args[2].getIntValue();
       if (rowIndex < 0 || rowIndex >= mat.matrix.getRowDimension()
-              || colIndex < 0 || colIndex >= mat.matrix.getColumnDimension()) {
+          || colIndex < 0 || colIndex >= mat.matrix.getColumnDimension()) {
         throw new org.nlogo.api.ExtensionException("(" + rowIndex + "," + colIndex + ") are not valid indices for a matrix with dimensions  "
-                + mat.matrix.getRowDimension() + "x" + mat.matrix.getColumnDimension());
+            + mat.matrix.getRowDimension() + "x" + mat.matrix.getColumnDimension());
       }
       mat.matrix.set(rowIndex, colIndex, args[3].getDoubleValue());
     }
@@ -434,24 +433,24 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.commandSyntax(new int[]{Syntax.WildcardType(),
-                Syntax.NumberType(),
-                Syntax.ListType()});
+          Syntax.NumberType(),
+          Syntax.ListType()});
     }
 
     @Override
     public void perform(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       int rowIndex = args[1].getIntValue();
       Jama.Matrix newRow = new Jama.Matrix(convertSimpleLogoListToArray(args[2].getList()));
       int newRowLength = newRow.getColumnDimension();
       if (rowIndex < 0 || rowIndex >= mat.matrix.getRowDimension()) {
         throw new org.nlogo.api.ExtensionException(rowIndex + " is not valid row index for a matrix with dimensions "
-                + mat.matrix.getRowDimension() + "x" + mat.matrix.getColumnDimension());
+            + mat.matrix.getRowDimension() + "x" + mat.matrix.getColumnDimension());
       }
       if (newRowLength != mat.matrix.getColumnDimension()) {
-        throw new org.nlogo.api.ExtensionException("The length of the given list (" + newRowLength
-                + ") is different from the length of the matrix row (" + mat.matrix.getColumnDimension() + ").");
+        throw new org.nlogo.api.ExtensionException("The length of the given list (" + newRowLength +
+            ") is different from the length of the matrix row (" + mat.matrix.getColumnDimension() + ").");
       }
 
       mat.matrix.setMatrix(rowIndex, rowIndex, 0, newRowLength - 1, newRow);
@@ -463,13 +462,13 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.commandSyntax(new int[]{Syntax.WildcardType(),
-                Syntax.NumberType(),
-                Syntax.NumberType()});
+          Syntax.NumberType(),
+          Syntax.NumberType()});
     }
 
     @Override
     public void perform(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       int rowIndex1 = args[1].getIntValue();
       int rowIndex2 = args[2].getIntValue();
@@ -477,18 +476,18 @@ public class MatrixExtension
       int numRows = mat.matrix.getRowDimension();
       if (rowIndex1 < 0 || rowIndex1 >= numRows) {
         throw new org.nlogo.api.ExtensionException("The first row index, " + rowIndex1
-                + ", is not valid for a " + numRows + " x " + numCols + " matrix.");
+            + ", is not valid for a " + numRows + " x " + numCols + " matrix.");
       }
       if (rowIndex2 < 0 || rowIndex2 >= numRows) {
         throw new org.nlogo.api.ExtensionException("The second row index, " + rowIndex2
-                + ", is not valid for a " + numRows + " x " + numCols + " matrix.");
+            + ", is not valid for a " + numRows + " x " + numCols + " matrix.");
       }
 
       // Save the row given by rowIndex1 in row1; overwrite that row with the row given by
       // rowIndex2, then overwrite the row given by rowIndex2 with the saved row, row1.
       Jama.Matrix row1 = mat.matrix.getMatrix(rowIndex1, rowIndex1, 0, numCols - 1);
       mat.matrix.setMatrix(rowIndex1, rowIndex1, 0, numCols - 1,
-              mat.matrix.getMatrix(rowIndex2, rowIndex2, 0, numCols - 1));
+          mat.matrix.getMatrix(rowIndex2, rowIndex2, 0, numCols - 1));
       mat.matrix.setMatrix(rowIndex2, rowIndex2, 0, numCols - 1, row1);
     }
   }
@@ -498,24 +497,24 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.commandSyntax(new int[]{Syntax.WildcardType(),
-                Syntax.NumberType(),
-                Syntax.ListType()});
+          Syntax.NumberType(),
+          Syntax.ListType()});
     }
 
     @Override
     public void perform(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       int colIndex = args[1].getIntValue();
       Jama.Matrix newCol = new Jama.Matrix(convertSimpleLogoListToArray(args[2].getList())).transpose();
       int newColLength = newCol.getRowDimension();
       if (colIndex < 0 || colIndex >= mat.matrix.getColumnDimension()) {
         throw new org.nlogo.api.ExtensionException(colIndex + " is not valid column index for a matrix with dimensions "
-                + mat.matrix.getRowDimension() + "x" + mat.matrix.getColumnDimension());
+            + mat.matrix.getRowDimension() + "x" + mat.matrix.getColumnDimension());
       }
       if (newColLength != mat.matrix.getRowDimension()) {
-        throw new org.nlogo.api.ExtensionException("The length of the given list (" + newColLength
-                + ") is different from the length of the matrix column (" + mat.matrix.getRowDimension() + ").");
+        throw new org.nlogo.api.ExtensionException("The length of the given list (" + newColLength +
+            ") is different from the length of the matrix column (" + mat.matrix.getRowDimension() + ").");
       }
 
       mat.matrix.setMatrix(0, newColLength - 1, colIndex, colIndex, newCol);
@@ -527,13 +526,13 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.commandSyntax(new int[]{Syntax.WildcardType(),
-                Syntax.NumberType(),
-                Syntax.NumberType()});
+          Syntax.NumberType(),
+          Syntax.NumberType()});
     }
 
     @Override
     public void perform(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       int colIndex1 = args[1].getIntValue();
       int colIndex2 = args[2].getIntValue();
@@ -541,18 +540,18 @@ public class MatrixExtension
       int numRows = mat.matrix.getRowDimension();
       if (colIndex1 < 0 || colIndex1 >= numCols) {
         throw new org.nlogo.api.ExtensionException("The first column index, " + colIndex1
-                + ", is not valid for a " + numRows + " x " + numCols + " matrix.");
+            + ", is not valid for a " + numRows + " x " + numCols + " matrix.");
       }
       if (colIndex2 < 0 || colIndex2 >= numCols) {
         throw new org.nlogo.api.ExtensionException("The second column index, " + colIndex2
-                + ", is not valid for a " + numRows + " x " + numCols + " matrix.");
+            + ", is not valid for a " + numRows + " x " + numCols + " matrix.");
       }
 
       // Save the column given by colIndex1 in col1; overwrite that column with the column given by
       // colIndex2, then overwrite the column given by colIndex2 with the saved column, col1.
       Jama.Matrix col1 = mat.matrix.getMatrix(0, numRows - 1, colIndex1, colIndex1);
       mat.matrix.setMatrix(0, numRows - 1, colIndex1, colIndex1,
-              mat.matrix.getMatrix(0, numRows - 1, colIndex2, colIndex2));
+          mat.matrix.getMatrix(0, numRows - 1, colIndex2, colIndex2));
       mat.matrix.setMatrix(0, numRows - 1, colIndex2, colIndex2, col1);
     }
   }
@@ -562,22 +561,22 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(),
-                Syntax.NumberType(),
-                Syntax.NumberType(),
-                Syntax.WildcardType()},
-              Syntax.WildcardType());
+          Syntax.NumberType(),
+          Syntax.NumberType(),
+          Syntax.WildcardType()},
+          Syntax.WildcardType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       int rowIndex = args[1].getIntValue();
       int colIndex = args[2].getIntValue();
       if (rowIndex < 0 || rowIndex >= mat.matrix.getRowDimension()
-              || colIndex < 0 || colIndex >= mat.matrix.getColumnDimension()) {
+          || colIndex < 0 || colIndex >= mat.matrix.getColumnDimension()) {
         throw new org.nlogo.api.ExtensionException("(" + rowIndex + "," + colIndex + ") are not valid indices for a matrix with dimensions  "
-                + mat.matrix.getRowDimension() + "x" + mat.matrix.getColumnDimension());
+            + mat.matrix.getRowDimension() + "x" + mat.matrix.getColumnDimension());
       }
       LogoMatrix matcopy = new LogoMatrix(getMatrixFromArgument(args[0]).matrix.copy());
       matcopy.matrix.set(rowIndex, colIndex, args[3].getDoubleValue());
@@ -590,12 +589,12 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType()},
-              Syntax.ListType());
+          Syntax.ListType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       LogoListBuilder dims = new LogoListBuilder();
       dims.add((double) mat.matrix.getRowDimension());
@@ -609,12 +608,12 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType()},
-              Syntax.ListType());
+          Syntax.ListType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       return convertArrayToNestedLogoList(getMatrixFromArgument(args[0]).matrix.getArray());
     }
   }
@@ -624,12 +623,12 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.ListType()},
-              Syntax.WildcardType());
+          Syntax.WildcardType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       return new LogoMatrix(new Jama.Matrix(convertNestedLogoListToArray(args[0].getList())));
     }
   }
@@ -639,12 +638,12 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType()},
-              Syntax.ListType());
+          Syntax.ListType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       return convertArrayToNestedLogoList(getMatrixFromArgument(args[0]).matrix.transpose().getArray());
     }
   }
@@ -654,12 +653,12 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.ListType()},
-              Syntax.WildcardType());
+          Syntax.WildcardType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       return new LogoMatrix(new Jama.Matrix(convertNestedLogoListToArray(args[0].getList())).transpose());
     }
   }
@@ -669,12 +668,12 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.NumberType(), Syntax.NumberType(), Syntax.NumberType()},
-              Syntax.WildcardType());
+          Syntax.WildcardType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       return new LogoMatrix(new Jama.Matrix(args[0].getIntValue(), args[1].getIntValue(), args[2].getDoubleValue()));
     }
   }
@@ -684,12 +683,12 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.NumberType()},
-              Syntax.WildcardType());
+          Syntax.WildcardType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       int size = args[0].getIntValue();
       return new LogoMatrix(Jama.Matrix.identity(size, size));
     }
@@ -700,12 +699,12 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType()},
-              Syntax.WildcardType());
+          Syntax.WildcardType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       return new LogoMatrix(getMatrixFromArgument(args[0]).matrix.copy());
     }
   }
@@ -715,21 +714,21 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType()},
-              Syntax.StringType());
+          Syntax.StringType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
 
       double[][] dArray = getMatrixFromArgument(args[0]).matrix.getArray();
       int maxLen[] = new int[dArray[0].length];
       for (int j = 0; j < dArray[0].length; j++) {
         maxLen[j] = 0;
       }
-      for (double[] dArray1 : dArray) {
-        for (int j = 0; j < dArray1.length; j++) {
-          int len = org.nlogo.api.Dump.number(dArray1[j]).length();
+      for (double[] row : dArray) {
+        for (int j = 0; j < row.length; j++) {
+          int len = org.nlogo.api.Dump.number(row[j]).length();
           if (len > maxLen[j]) {
             maxLen[j] = len;
           }
@@ -763,7 +762,8 @@ public class MatrixExtension
   public static class TimesScalar extends DefaultReporter {
     @Override 
     public Syntax getSyntax() {
-      return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.NumberType()}, Syntax.WildcardType());
+      return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.NumberType()},
+          Syntax.WildcardType());
     }
     @Override
     public Object report(Argument args[], Context context) throws ExtensionException, LogoException {
@@ -938,7 +938,7 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.NumberType()},
-              Syntax.WildcardType());
+          Syntax.WildcardType());
     }
 
     @Override
@@ -1075,12 +1075,12 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType()},
-              Syntax.NumberType());
+          Syntax.NumberType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       try {
         return new Double(mat.matrix.det());
@@ -1095,12 +1095,12 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType()},
-              Syntax.NumberType());
+          Syntax.NumberType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       try {
         return new Double(mat.matrix.rank());
@@ -1115,12 +1115,12 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType()},
-              Syntax.NumberType());
+          Syntax.NumberType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       try {
         return new Double(mat.matrix.cond());
@@ -1135,12 +1135,12 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType()},
-              Syntax.NumberType());
+          Syntax.NumberType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       try {
         return new Double(mat.matrix.trace());
@@ -1155,12 +1155,12 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType()},
-              Syntax.WildcardType());
+          Syntax.WildcardType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       try {
         return new LogoMatrix(mat.matrix.inverse());
@@ -1175,12 +1175,12 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType()},
-              Syntax.WildcardType());
+          Syntax.WildcardType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       return new LogoMatrix(mat.matrix.transpose());
     }
@@ -1191,13 +1191,13 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.NumberType(),
-                Syntax.NumberType(), Syntax.NumberType(), Syntax.NumberType()},
-              Syntax.WildcardType());
+          Syntax.NumberType(), Syntax.NumberType(), Syntax.NumberType()},
+          Syntax.WildcardType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       int r1 = args[1].getIntValue();
       int c1 = args[2].getIntValue();
@@ -1210,23 +1210,23 @@ public class MatrixExtension
 
       if (r1 < 0 || r1 >= numRows) {
         throw new org.nlogo.api.ExtensionException("Start row index ("
-                + r1 + ") is invalid.  Should be between 0 and "
-                + (numRows - 1) + " inclusive.");
+            + r1 + ") is invalid.  Should be between 0 and "
+            + (numRows - 1) + " inclusive.");
       }
       if (c1 < 0 || c1 >= numCols) {
         throw new org.nlogo.api.ExtensionException("Start column index ("
-                + c1 + ") is invalid.  Should be between 0 and "
-                + (numCols - 1) + " inclusive.");
+            + c1 + ") is invalid.  Should be between 0 and "
+            + (numCols - 1) + " inclusive.");
       }
       if (r2 < 1 || r2 > numRows) {
         throw new org.nlogo.api.ExtensionException("End row index ("
-                + r2 + ") is invalid.  Should be between 1 and "
-                + (numRows) + " inclusive.");
+            + r2 + ") is invalid.  Should be between 1 and "
+            + (numRows) + " inclusive.");
       }
       if (c2 < 1 || c2 > numCols) {
         throw new org.nlogo.api.ExtensionException("End column index ("
-                + c2 + ") is invalid.  Should be between 1 and "
-                + (numCols) + " inclusive.");
+            + c2 + ") is invalid.  Should be between 1 and "
+            + (numCols) + " inclusive.");
       }
       return new LogoMatrix(mat.matrix.getMatrix(r1, r2 - 1, c1, c2 - 1));
     }
@@ -1237,19 +1237,19 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(),
-                Syntax.NumberType()},
-              Syntax.ListType());
+          Syntax.NumberType()},
+          Syntax.ListType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       int rowIndex = args[1].getIntValue();
       int ncols = mat.matrix.getColumnDimension();
       if (rowIndex < 0 || rowIndex >= mat.matrix.getRowDimension()) {
         throw new org.nlogo.api.ExtensionException("(" + rowIndex + ") is not valid indices for a matrix with dimensions  "
-                + mat.matrix.getRowDimension() + "x" + mat.matrix.getColumnDimension());
+            + mat.matrix.getRowDimension() + "x" + mat.matrix.getColumnDimension());
       }
       LogoMatrix rowArray = new LogoMatrix(mat.matrix.getMatrix(rowIndex, rowIndex, 0, ncols - 1));
 
@@ -1262,19 +1262,19 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(),
-                Syntax.NumberType()},
-              Syntax.ListType());
+          Syntax.NumberType()},
+          Syntax.ListType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       int colIndex = args[1].getIntValue();
       int nrows = mat.matrix.getRowDimension();
       if (colIndex < 0 || colIndex >= mat.matrix.getColumnDimension()) {
         throw new org.nlogo.api.ExtensionException("(" + colIndex + ") is not valid indices for a matrix with dimensions  "
-                + mat.matrix.getRowDimension() + "x" + mat.matrix.getColumnDimension());
+            + mat.matrix.getRowDimension() + "x" + mat.matrix.getColumnDimension());
       }
       LogoMatrix colArray = new LogoMatrix(mat.matrix.getMatrix(0, nrows - 1, colIndex, colIndex));
 
@@ -1287,12 +1287,12 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType()},
-              Syntax.ListType());
+          Syntax.ListType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       LogoListBuilder retList = new LogoListBuilder();
       double[] eigenVals = mat.matrix.eig().getRealEigenvalues();
@@ -1308,12 +1308,12 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType()},
-              Syntax.ListType());
+          Syntax.ListType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       LogoListBuilder retList = new LogoListBuilder();
       double[] eigenVals = mat.matrix.eig().getImagEigenvalues();
@@ -1329,12 +1329,12 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType()},
-              Syntax.WildcardType());
+          Syntax.WildcardType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       return new LogoMatrix(mat.matrix.eig().getV());
     }
@@ -1345,12 +1345,12 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType(), Syntax.WildcardType()},
-              Syntax.WildcardType());
+          Syntax.WildcardType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       LogoMatrix mat2 = getMatrixFromArgument(args[1]);
       try {
@@ -1376,19 +1376,19 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.ListType()},
-              Syntax.ListType());
+          Syntax.ListType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       // Y is the list of values to fit to a linear trend.
       Jama.Matrix Y = new Jama.Matrix(convertSimpleLogoListToArray(args[0].getList())).transpose();
       int numObsv = Y.getRowDimension();
 
       if (numObsv < 1) {
         throw new org.nlogo.api.ExtensionException(
-                "The input list is empty.");
+            "The input list is empty.");
       }
 
       LogoListBuilder forecast = new LogoListBuilder();
@@ -1464,24 +1464,24 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.ListType()},
-              Syntax.ListType());
+          Syntax.ListType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       // Y is the list of values to fit to a compound growth trend.
       Jama.Matrix Yin = new Jama.Matrix(convertSimpleLogoListToArray(args[0].getList())).transpose();
       int numObsv = Yin.getRowDimension();
 
       if (numObsv < 1) {
         throw new org.nlogo.api.ExtensionException(
-                "The input list is empty.");
+            "The input list is empty.");
       }
       for (int i = 0; i < numObsv; i++) {
         if (Yin.get(i, 0) <= 0.0) {
           throw new org.nlogo.api.ExtensionException(
-                  "Item " + i + " of the input list is zero or negative.");
+              "Item " + i + " of the input list is zero or negative.");
         }
       }
 
@@ -1561,24 +1561,24 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.ListType()},
-              Syntax.ListType());
+          Syntax.ListType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
       // Y is the list of values to fit to an exponential trend.
       Jama.Matrix Yin = new Jama.Matrix(convertSimpleLogoListToArray(args[0].getList())).transpose();
       int numObsv = Yin.getRowDimension();
 
       if (numObsv < 1) {
         throw new org.nlogo.api.ExtensionException(
-                "The input list is empty.");
+            "The input list is empty.");
       }
       for (int i = 0; i < numObsv; i++) {
         if (Yin.get(i, 0) <= 0.0) {
           throw new org.nlogo.api.ExtensionException(
-                  "Item " + i + " of the input list is zero or negative.");
+              "Item " + i + " of the input list is zero or negative.");
         }
       }
 
@@ -1653,12 +1653,12 @@ public class MatrixExtension
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{Syntax.WildcardType()},
-              Syntax.ListType());
+          Syntax.ListType());
     }
 
     @Override
     public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
+        throws ExtensionException, LogoException {
 
       LogoMatrix mat = getMatrixFromArgument(args[0]);
       Jama.Matrix X = mat.matrix.copy();
@@ -1667,7 +1667,7 @@ public class MatrixExtension
 
       if (numVars >= numObsv) {
         throw new org.nlogo.api.ExtensionException(
-                "The system is overdetermined.");
+            "The system is overdetermined.");
       }
 
       Jama.Matrix Y = new Jama.Matrix(numObsv, 1);
