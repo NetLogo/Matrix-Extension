@@ -301,20 +301,18 @@ public class MatrixExtension
 
     // matrix:times-scalar mat factor => matrix object
     primManager.addPrimitive("times-scalar", new TimesScalar());
-    // matrix:times mat1 mat2 => matrix object
-    primManager.addPrimitive("times", new Times());
-    primManager.addPrimitive("*", new TimesInfix());
-    // matrix:times-element-wise mat1 mat2 => matrix object
-    primManager.addPrimitive("times-element-wise", new TimesElementWise());
+    primManager.addPrimitive("times", new VariadicOperator(timesOp, "matrix:times"));
+    primManager.addPrimitive("*", new InfixOperator(timesOp, "matrix:*", InfixOperator.TIMES_PRECEDENCE));
+    primManager.addPrimitive("times-element-wise", new VariadicOperator(timesElementsOp, "matrix:times-element-wise"));
+    primManager.addPrimitive("plus", new VariadicOperator(plusOp, "matrix:plus"));
+    primManager.addPrimitive("+", new InfixOperator(plusOp, "matrix:+", InfixOperator.PLUS_PRECEDENCE));
+    primManager.addPrimitive("minus", new VariadicOperator(minusOp, "matrix:minus"));
+    primManager.addPrimitive("-", new InfixOperator(minusOp, "matrix:-", InfixOperator.PLUS_PRECEDENCE));
     // matrix:map task mat => matrix object
     primManager.addPrimitive("map", new MapElements());
     // matrix:plus-scalar mat value => matrix object
     primManager.addPrimitive("plus-scalar", new PlusScalar());
     // matrix:plus mat1 mat2 => matrix object
-    primManager.addPrimitive("plus", new Plus());
-    primManager.addPrimitive("+", new PlusInfix());
-    primManager.addPrimitive("minus", new Minus());
-    primManager.addPrimitive("-", new MinusInfix());
     // matrix:det mat => number
     primManager.addPrimitive("det", new Det());
     // matrix:rank mat => number
@@ -836,70 +834,66 @@ public class MatrixExtension
     }
   }
 
-  public static class Times extends DefaultReporter {
+  public static class VariadicOperator extends DefaultReporter {
+    private Operator operator;
+    private String name;
+
+    public VariadicOperator(Operator operator, String name) {
+      this.operator = operator;
+      this.name = name;
+    }
 
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(new int[]{
-              Syntax.WildcardType(),
-              Syntax.WildcardType() | Syntax.RepeatableType()},
+                      Syntax.WildcardType(),
+                      Syntax.WildcardType() | Syntax.RepeatableType()},
               Syntax.WildcardType());
     }
 
     @Override
     public Object report(Argument args[], Context context) throws ExtensionException, LogoException {
       try {
-        return getMatrixFromNumeric(timesOp.reduce(Arrays.asList(getNumericsFromArguments(args)).iterator()),
-                "You must give matrix:times at least one matrix argument.");
+        return getMatrixFromNumeric(operator.reduce(Arrays.asList(getNumericsFromArguments(args)).iterator()),
+                "You must give " + name + " at least one matrix argument.");
       } catch (IllegalArgumentException e) {
         throw new ExtensionException(e);
       }
     }
   }
 
-  public static class TimesInfix extends DefaultReporter {
+  public static class InfixOperator extends DefaultReporter {
+    public static final int PLUS_PRECEDENCE = Syntax.NormalPrecedence() - 3;
+    public static final int TIMES_PRECEDENCE = Syntax.NormalPrecedence() - 2;
+
+    private Operator operator;
+    private String name;
+    private int precedence;
+
+    public InfixOperator(Operator operator, String name, int precedence) {
+      this.operator = operator;
+      this.name = name;
+      this.precedence = precedence;
+    }
 
     @Override
     public Syntax getSyntax() {
       return Syntax.reporterSyntax(Syntax.WildcardType(), new int[]{
               Syntax.WildcardType()},
               Syntax.WildcardType(),
-              Syntax.NormalPrecedence() - 2);
+              precedence);
     }
 
     @Override
     public Object report(Argument args[], Context context) throws ExtensionException, LogoException {
       try {
-        return getMatrixFromNumeric(timesOp.apply(getNumericFromArgument(args[0]), getNumericFromArgument(args[1])),
-                "You must give matrix:* at least one matrix argument.");
+        return getMatrixFromNumeric(operator.apply(getNumericFromArgument(args[0]), getNumericFromArgument(args[1])),
+                "You must give " + name + " at least one matrix argument.");
       } catch (IllegalArgumentException e) {
         throw new ExtensionException(e);
       }
     }
   }
-
-  public static class TimesElementWise extends DefaultReporter {
-
-    @Override
-    public Syntax getSyntax() {
-      return Syntax.reporterSyntax(new int[]{
-		  	  Syntax.WildcardType(),
-			  Syntax.WildcardType() | Syntax.RepeatableType()},
-              Syntax.WildcardType());
-    }
-
-    @Override
-    public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
-      try {
-        return getMatrixFromNumeric(timesElementsOp.reduce(Arrays.asList(getNumericsFromArguments(args)).iterator()),
-                "You must give matrix:times-element-wise at least one matrix argument.");
-      } catch (IllegalArgumentException e) {
-        throw new ExtensionException(e);
-      }
-    }
-  }
-
   public static class MapElements extends DefaultReporter {
 
     @Override
@@ -983,89 +977,6 @@ public class MatrixExtension
       try {
         return getMatrixFromNumeric(plusOp.apply(getNumericFromArgument(args[0]), getNumericFromArgument(args[1])),
                 "You must give matrix:plus-scalar a matrix as the first input.");
-      } catch (IllegalArgumentException e) {
-        throw new ExtensionException(e);
-      }
-    }
-  }
-
-  public static class Plus extends DefaultReporter {
-
-    @Override
-    public Syntax getSyntax() {
-      return Syntax.reporterSyntax(new int[]{
-              Syntax.WildcardType(),
-              Syntax.WildcardType() | Syntax.RepeatableType()},
-              Syntax.WildcardType());
-    }
-
-    @Override
-    public Object report(Argument args[], Context context) throws ExtensionException, LogoException {
-      try {
-        return getMatrixFromNumeric(plusOp.reduce(Arrays.asList(getNumericsFromArguments(args)).iterator()),
-                "You must give matrix:plus at least one matrix argument.");
-      } catch (IllegalArgumentException e) {
-        throw new ExtensionException(e);
-      }
-    }
-  }
-
-  public static class PlusInfix extends DefaultReporter {
-
-    @Override
-    public Syntax getSyntax() {
-      return Syntax.reporterSyntax(Syntax.WildcardType(), new int[]{
-              Syntax.WildcardType()},
-              Syntax.WildcardType(),
-              Syntax.NormalPrecedence() - 3);
-    }
-
-    @Override
-    public Object report(Argument args[], Context context) throws ExtensionException, LogoException {
-      try {
-        return getMatrixFromNumeric(plusOp.apply(getNumericFromArgument(args[0]), getNumericFromArgument(args[1])),
-                "You must give matrix:+ at least one matrix argument.");
-      } catch (IllegalArgumentException e) {
-        throw new ExtensionException(e);
-      }
-    }
-  }
-
-  public static class Minus extends DefaultReporter {
-    @Override
-    public Syntax getSyntax() {
-      return Syntax.reporterSyntax(new int[]{
-              Syntax.WildcardType(),
-              Syntax.WildcardType() | Syntax.RepeatableType()},
-              Syntax.WildcardType());
-    }
-
-    @Override
-    public Object report(Argument args[], Context context) throws ExtensionException, LogoException {
-      try {
-        return getMatrixFromNumeric(minusOp.reduce(Arrays.asList(getNumericsFromArguments(args)).iterator()),
-                "You must give matrix:minus at least one matrix argument.");
-      } catch (IllegalArgumentException e) {
-        throw new ExtensionException(e);
-      }
-    }
-  }
-
-  public static class MinusInfix extends DefaultReporter {
-
-    @Override
-    public Syntax getSyntax() {
-      return Syntax.reporterSyntax(Syntax.WildcardType(), new int[]{
-              Syntax.WildcardType()},
-              Syntax.WildcardType(),
-              Syntax.NormalPrecedence() - 3);
-    }
-
-    @Override
-    public Object report(Argument args[], Context context) throws ExtensionException, LogoException {
-      try {
-        return getMatrixFromNumeric(minusOp.apply(getNumericFromArgument(args[0]), getNumericFromArgument(args[1])),
-                "You must give matrix:- at least one matrix argument.");
       } catch (IllegalArgumentException e) {
         throw new ExtensionException(e);
       }

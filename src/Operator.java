@@ -4,9 +4,6 @@ import Jama.Matrix;
 
 import java.util.Iterator;
 
-/**
- *
- */
 public abstract class Operator {
   public Object reduce(Iterator<Object> elems) {
     if (!elems.hasNext()) {
