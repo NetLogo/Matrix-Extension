@@ -1,5 +1,6 @@
 package org.nlogo.extensions.matrix;
 
+import Jama.Matrix;
 import org.nlogo.api.CompilerException;
 import org.nlogo.api.LogoException;
 import org.nlogo.api.ExtensionException;
@@ -12,7 +13,7 @@ import org.nlogo.api.DefaultReporter;
 import org.nlogo.api.DefaultCommand;
 import org.nlogo.nvm.ReporterTask;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MatrixExtension
     extends org.nlogo.api.DefaultClassManager {
@@ -375,6 +376,33 @@ public class MatrixExtension
           + org.nlogo.api.Dump.logoObject(obj));
     }
     return (LogoMatrix) obj;
+  }
+
+  private static Object[] getNumericsFromArguments(Argument[] args) throws ExtensionException, LogoException {
+    Object[] objs = new Object[args.length];
+    for (int i = 0; i < args.length; i++) {
+      objs[i] = getNumericFromArgument(args[i]);
+    }
+    return objs;
+  }
+
+  private static Object getNumericFromArgument(Argument arg) throws ExtensionException, LogoException {
+    Object obj = arg.get();
+    if (obj instanceof Double) {
+      return obj;
+    } else if (obj instanceof LogoMatrix) {
+      return ((LogoMatrix) obj).matrix;
+    } else {
+      throw new ExtensionException("Inputs must be matrices or numbers but found a " + obj.getClass());
+    }
+  }
+
+  private static LogoMatrix getMatrixFromNumeric(Object obj, String message) throws ExtensionException {
+    if (obj instanceof Matrix) {
+      return new LogoMatrix((Matrix) obj);
+    } else {
+      throw new ExtensionException(message);
+    }
   }
 
   public static class Get extends DefaultReporter {
@@ -759,6 +787,38 @@ public class MatrixExtension
     }
   }
 
+  private static class TimesElementsOp extends Operator {
+    @Override
+    public double apply(double accumulator, double elem) {
+      return accumulator * elem;
+    }
+  }
+  static public final Operator timesElementsOp = new TimesElementsOp();
+
+  private static class TimesOp extends TimesElementsOp {
+    @Override
+    public Matrix applyEquals(Matrix accumulator, Matrix elem) {
+      return accumulator.times(elem);
+    }
+  }
+  static public final Operator timesOp = new TimesOp();
+
+  private static class PlusOp extends Operator {
+    @Override
+    public double apply(double accumulator, double elem) {
+      return accumulator + elem;
+    }
+  }
+  static public final Operator plusOp = new PlusOp();
+
+  private static class MinusOp extends Operator {
+    @Override
+    public double apply(double accumulator, double elem) {
+      return accumulator - elem;
+    }
+  }
+  static public final Operator minusOp = new MinusOp();
+
   public static class TimesScalar extends DefaultReporter {
     @Override 
     public Syntax getSyntax() {
@@ -767,7 +827,12 @@ public class MatrixExtension
     }
     @Override
     public Object report(Argument args[], Context context) throws ExtensionException, LogoException {
-      return Times.times(args);
+      try {
+        return getMatrixFromNumeric(timesElementsOp.applyEquals(getNumericFromArgument(args[0]), getNumericFromArgument(args[1])),
+                "You must give matrix:times-scalar a matrix as the first input.");
+      } catch (IllegalArgumentException e) {
+        throw new ExtensionException(e);
+      }
     }
   }
 
@@ -782,39 +847,12 @@ public class MatrixExtension
     }
 
     @Override
-    public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
-      return times(args);
-    }
-
-    public static LogoMatrix times(Argument args[]) throws ExtensionException, LogoException {
-      double scalar = 1.0;
-      Jama.Matrix result = null;
+    public Object report(Argument args[], Context context) throws ExtensionException, LogoException {
       try {
-        for (Argument arg : args) {
-          Object obj = arg.get();
-          if (obj instanceof LogoMatrix) {
-            if (result == null) {
-              result = ((LogoMatrix) obj).matrix;
-            } else {
-              result = result.times(((LogoMatrix) obj).matrix);
-            }
-          } else if (obj instanceof Double) {
-            scalar *= (Double) obj;
-          } else {
-            throw new IllegalArgumentException("matrix:times only takes matrices and numbers as inputs.");
-          }
-        }
-        if (result == null) {
-          throw new IllegalArgumentException("You must supply matrix:times with at least one matrix.");
-        }
-        if (scalar != 1.0) {
-          // Note that result may still be the first argument, so we can't use timesEquals
-          result = result.times(scalar);
-        }
-        return new LogoMatrix(result);
-      } catch (IllegalArgumentException ex) {
-        throw new ExtensionException(ex);
+        return getMatrixFromNumeric(timesOp.reduce(Arrays.asList(getNumericsFromArguments(args)).iterator()),
+                "You must give matrix:times at least one matrix argument.");
+      } catch (IllegalArgumentException e) {
+        throw new ExtensionException(e);
       }
     }
   }
@@ -830,9 +868,13 @@ public class MatrixExtension
     }
 
     @Override
-    public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
-      return Times.times(args);
+    public Object report(Argument args[], Context context) throws ExtensionException, LogoException {
+      try {
+        return getMatrixFromNumeric(timesOp.apply(getNumericFromArgument(args[0]), getNumericFromArgument(args[1])),
+                "You must give matrix:* at least one matrix argument.");
+      } catch (IllegalArgumentException e) {
+        throw new ExtensionException(e);
+      }
     }
   }
 
@@ -849,16 +891,11 @@ public class MatrixExtension
     @Override
     public Object report(Argument args[], Context context)
             throws ExtensionException, LogoException {
-      LogoMatrix first = getMatrixFromArgument(args[0]);
-	  Jama.Matrix result = first.matrix.copy();
       try {
-		for (int i = 1; i < args.length; i++) {
-		  LogoMatrix mat = getMatrixFromArgument(args[i]);
-		  result.arrayTimesEquals(mat.matrix);
-		}
-        return new LogoMatrix(result);
-      } catch (IllegalArgumentException ex) {
-        throw new ExtensionException(ex);
+        return getMatrixFromNumeric(timesElementsOp.reduce(Arrays.asList(getNumericsFromArguments(args)).iterator()),
+                "You must give matrix:times-element-wise at least one matrix argument.");
+      } catch (IllegalArgumentException e) {
+        throw new ExtensionException(e);
       }
     }
   }
@@ -942,9 +979,13 @@ public class MatrixExtension
     }
 
     @Override
-    public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
-      return Plus.plus(args);
+    public Object report(Argument args[], Context context) throws ExtensionException, LogoException {
+      try {
+        return getMatrixFromNumeric(plusOp.apply(getNumericFromArgument(args[0]), getNumericFromArgument(args[1])),
+                "You must give matrix:plus-scalar a matrix as the first input.");
+      } catch (IllegalArgumentException e) {
+        throw new ExtensionException(e);
+      }
     }
   }
 
@@ -959,45 +1000,13 @@ public class MatrixExtension
     }
 
     @Override
-    public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
-      return plus(args);
-    }
-
-    public static LogoMatrix plus(Argument args[]) throws ExtensionException, LogoException {
-	  double scalar = 0.0;
-	  Jama.Matrix result = null;
-
-	  for (Argument arg : args) {
-		Object obj  = arg.get();
-		if (obj instanceof LogoMatrix) {
-		  if (result == null) {
-			result = ((LogoMatrix) obj).matrix.copy();
-		  } else {
-			Jama.Matrix addIn = ((LogoMatrix) obj).matrix;
-			try {
-			  result = result.plusEquals(addIn);
-			} catch (IllegalArgumentException e) {
-			  int numrows = result.getRowDimension();
-			  int numcols = result.getColumnDimension();
-			  int numrows2 = addIn.getRowDimension();
-			  int numcols2 = addIn.getColumnDimension();
-			  throw new org.nlogo.api.ExtensionException("Cannot add matrices with different dimensions: "
-				  + numrows + "x" + numcols + " vs. " + numrows2 + "x"
-				  + numcols2);
-			}
-		  }
-		} else if (obj instanceof Double) {
-		  scalar += arg.getDoubleValue();
-		} else {
-		  throw new IllegalArgumentException("matrix:plus only takes matrices and numbers as inputs.");
-		}
-	  }
-	  if (result == null) {
-		throw new IllegalArgumentException("You must supply matrix:plus with at least one matrix.");
-	  }
-	  result.plusEquals(new Jama.Matrix(result.getRowDimension(), result.getColumnDimension(), scalar));
-      return new LogoMatrix(result);
+    public Object report(Argument args[], Context context) throws ExtensionException, LogoException {
+      try {
+        return getMatrixFromNumeric(plusOp.reduce(Arrays.asList(getNumericsFromArguments(args)).iterator()),
+                "You must give matrix:plus at least one matrix argument.");
+      } catch (IllegalArgumentException e) {
+        throw new ExtensionException(e);
+      }
     }
   }
 
@@ -1012,9 +1021,13 @@ public class MatrixExtension
     }
 
     @Override
-    public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
-      return Plus.plus(args);
+    public Object report(Argument args[], Context context) throws ExtensionException, LogoException {
+      try {
+        return getMatrixFromNumeric(plusOp.apply(getNumericFromArgument(args[0]), getNumericFromArgument(args[1])),
+                "You must give matrix:+ at least one matrix argument.");
+      } catch (IllegalArgumentException e) {
+        throw new ExtensionException(e);
+      }
     }
   }
 
@@ -1028,28 +1041,13 @@ public class MatrixExtension
     }
 
     @Override
-    public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
-      return minus(args);
-    }
-
-    public static LogoMatrix minus(Argument args[]) throws ExtensionException, LogoException {
-      Jama.Matrix res = getMatrixFromArgument(args[0]).matrix.copy();
-      for (int i = 1; i < args.length; i++) {
-        Jama.Matrix addIn = getMatrixFromArgument(args[i]).matrix;
-        try {
-          res.minusEquals(addIn);
-        } catch (IllegalArgumentException e) {
-          int numrows = res.getRowDimension();
-          int numcols = res.getColumnDimension();
-          int numrows2 = addIn.getRowDimension();
-          int numcols2 = addIn.getColumnDimension();
-          throw new org.nlogo.api.ExtensionException("Can not subtract matrices with different dimensions: "
-                  + numrows + "x" + numcols + " vs. " + numrows2 + "x"
-                  + numcols2);
-        }
+    public Object report(Argument args[], Context context) throws ExtensionException, LogoException {
+      try {
+        return getMatrixFromNumeric(minusOp.reduce(Arrays.asList(getNumericsFromArguments(args)).iterator()),
+                "You must give matrix:minus at least one matrix argument.");
+      } catch (IllegalArgumentException e) {
+        throw new ExtensionException(e);
       }
-      return new LogoMatrix(res);
     }
   }
 
@@ -1064,9 +1062,13 @@ public class MatrixExtension
     }
 
     @Override
-    public Object report(Argument args[], Context context)
-            throws ExtensionException, LogoException {
-      return Minus.minus(args);
+    public Object report(Argument args[], Context context) throws ExtensionException, LogoException {
+      try {
+        return getMatrixFromNumeric(minusOp.apply(getNumericFromArgument(args[0]), getNumericFromArgument(args[1])),
+                "You must give matrix:- at least one matrix argument.");
+      } catch (IllegalArgumentException e) {
+        throw new ExtensionException(e);
+      }
     }
   }
 

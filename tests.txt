@@ -37,6 +37,8 @@ matrix-minus
   extensions [ matrix ]
   O> set glob1 matrix:from-row-list [[1 2 3] [4 5 6] [7 8 9]]
   (word matrix:minus glob1 glob1) => "{{matrix:  [ [ 0 0 0 ][ 0 0 0 ][ 0 0 0 ] ]}}"
+  (word matrix:minus glob1 1) => "{{matrix:  [ [ 0 1 2 ][ 3 4 5 ][ 6 7 8 ] ]}}"
+  (word matrix:minus 1 glob1) => "{{matrix:  [ [ 0 -1 -2 ][ -3 -4 -5 ][ -6 -7 -8 ] ]}}"
   (word (matrix:minus glob1 glob1 glob1)) => "{{matrix:  [ [ -1 -2 -3 ][ -4 -5 -6 ][ -7 -8 -9 ] ]}}"
   (word (glob1 matrix:- glob1 matrix:- glob1)) => "{{matrix:  [ [ -1 -2 -3 ][ -4 -5 -6 ][ -7 -8 -9 ] ]}}"
 
