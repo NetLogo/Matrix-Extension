@@ -11,11 +11,10 @@ endif
 
 SRCS=$(wildcard src/*.java)
 
-matrix.jar matrix.jar.pack.gz: $(SRCS) Jama-1.0.3.jar Jama-1.0.3.jar.pack.gz NetLogoHeadless.jar scala-library-2.10.4.jar  Makefile manifest.txt
+matrix.jar: $(SRCS) Jama-1.0.3.jar NetLogoHeadless.jar scala-library-2.10.4.jar  Makefile manifest.txt
 	mkdir -p classes
 	$(JAVA_HOME)/bin/javac -g -encoding us-ascii -source 1.7 -target 1.7 -classpath NetLogoHeadless.jar$(COLON)scala-library-2.10.4.jar$(COLON)Jama-1.0.3.jar -d classes $(SRCS)
 	jar cmf manifest.txt matrix.jar -C classes .
-	pack200 --modification-time=latest --effort=9 --strip-debug --no-keep-file-order --unknown-attribute=strip matrix.jar.pack.gz matrix.jar
 
 NetLogoHeadless.jar:
 	curl -f -s -S 'http://ccl.northwestern.edu/devel/6.0-M1/NetLogoHeadless.jar' -o NetLogoHeadless.jar
@@ -23,14 +22,13 @@ NetLogoHeadless.jar:
 scala-library-2.10.4.jar:
 	curl -f -s -S 'http://ccl.northwestern.edu/devel/scala-library-2.10.4.jar' -o scala-library-2.10.4.jar
 
-Jama-1.0.3.jar Jama-1.0.3.jar.pack.gz:
+Jama-1.0.3.jar:
 	curl -f -s -S 'http://math.nist.gov/javanumerics/jama/Jama-1.0.3.jar' -o Jama-1.0.3.jar
-	pack200 --modification-time=latest --effort=9 --strip-debug --no-keep-file-order --unknown-attribute=strip Jama-1.0.3.jar.pack.gz Jama-1.0.3.jar
 
 matrix.zip: matrix.jar
 	rm -rf matrix
 	mkdir matrix
-	cp -rp matrix.jar matrix.jar.pack.gz Jama-1.0.3.jar Jama-1.0.3.jar.pack.gz README.md Makefile src manifest.txt matrix
+	cp -rp matrix.jar Jama-1.0.3.jar README.md Makefile src manifest.txt matrix
 	zip -rv matrix.zip matrix
 	rm -rf matrix
 
