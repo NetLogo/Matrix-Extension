@@ -8,9 +8,9 @@ The matrix extension is pre-installed in NetLogo. For instructions on using it i
 
 ## Building
 
-Run `make`.
+Run `sbt package`.
 
-If compilation succeeds, `matrix.jar` will be created.
+If compilation succeeds, `matrix.jar` and `matrix.zip` will be created.
 
 ## Credits
 

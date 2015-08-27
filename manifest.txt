@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Extension-Name: matrix
-Class-Manager: org.nlogo.extensions.matrix.MatrixExtension
-NetLogo-Extension-API-Version: 5.0

@@ -9,3 +9,6 @@
 /matrix.zip
 /scalatest*.jar
 /tmp/
+/target
+/project/target
+/project/project
