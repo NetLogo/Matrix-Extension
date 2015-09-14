@@ -73,6 +73,10 @@ public class MatrixExtension
       return this == obj;
     }
 
+    public int hashCode() {
+      return super.hashCode();
+    }
+
     @Override
     public String dump(boolean readable, boolean exporting, boolean reference) {
       StringBuilder buf = new StringBuilder();
