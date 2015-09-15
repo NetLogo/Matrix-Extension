@@ -25,6 +25,18 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "2.2.1" % "test"
       )
 
+packageBin in Compile := {
+  val jar = (packageBin in Compile).value
+  val matrixZip = baseDirectory.value / "matrix.zip"
+  if (matrixZip.exists) {
+    IO.unzip(matrixZip, baseDirectory.value)
+    for (jar <- (baseDirectory.value / "matrix" ** "*.jar").get)
+      IO.copyFile(jar, baseDirectory.value / jar.getName)
+    IO.delete(baseDirectory.value / "matrix")
+  }
+  jar
+}
+
 test in Test := {
   // This way of running tests is *crazy*, but it's how to get this
   // to work with ExtensionManager -sigh-  RG 8/26/15
