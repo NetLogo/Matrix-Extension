@@ -12,13 +12,27 @@ scalacOptions ++= Seq("-deprecation", "-unchecked", "-Xlint", "-Xfatal-warnings"
 javacOptions ++= Seq("-g", "-deprecation", "-Xlint:all", "-Xlint:-serial", "-Xlint:-path",
   "-encoding", "us-ascii")
 
-val netLogoJarURL =
-    Option(System.getProperty("netlogo.jar.url")).getOrElse("http://ccl.northwestern.edu/netlogo/5.3.0/NetLogo.jar")
+val netLogoJarsOrDependencies =
+  Option(System.getProperty("netlogo.jar.url"))
+    .orElse(Some("http://ccl.northwestern.edu/netlogo/5.3.0/NetLogo.jar"))
+    .map { url =>
+      import java.io.File
+      import java.net.URI
+      val testsUrl = url.replaceFirst("NetLogo", "NetLogo-tests")
+      if (url.startsWith("file:"))
+        (Seq(new File(new URI(url)), new File(new URI(testsUrl))), Seq())
+      else
+        (Seq(), Seq(
+          "org.nlogo" % "NetLogo" % "5.3.0" from url,
+          "org.nlogo" % "NetLogo-tests" % "5.3.0" % "test" from testsUrl))
+    }.get
+
+unmanagedJars in Compile ++= netLogoJarsOrDependencies._1
+
+libraryDependencies ++= netLogoJarsOrDependencies._2
 
 libraryDependencies ++= Seq(
-  "org.nlogo" % "NetLogo" % "5.3.0" from netLogoJarURL,
   "gov.nist.math" % "jama" % "1.0.3",
-  "org.nlogo" % "NetLogo-tests" % "5.3.0" % "test" from netLogoJarURL.stripSuffix(".jar") + "-tests.jar",
   "asm" % "asm-all" % "3.3.1" % "test",
   "org.scala-lang" % "scala-library" % "2.11.6" % "test",
   "org.picocontainer" % "picocontainer" % "2.13.6" % "test",
