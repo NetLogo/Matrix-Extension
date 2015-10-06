@@ -1,10 +1,15 @@
-scalaVersion := "2.11.7"
+import org.nlogo.build.NetLogoExtension
 
-enablePlugins(org.nlogo.build.NetLogoExtension)
+enablePlugins(NetLogoExtension)
+
+scalaVersion := "2.11.7"
 
 name := "matrix"
 
 netLogoClassManager := "org.nlogo.extensions.matrix.MatrixExtension"
+
+netLogoTarget :=
+  NetLogoExtension.directoryTarget(baseDirectory.value)
 
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-Xlint", "-Xfatal-warnings",
   "-encoding", "us-ascii")
@@ -12,44 +17,32 @@ scalacOptions ++= Seq("-deprecation", "-unchecked", "-Xlint", "-Xfatal-warnings"
 javacOptions ++= Seq("-g", "-deprecation", "-Xlint:all", "-Xlint:-serial", "-Xlint:-path",
   "-encoding", "us-ascii")
 
-val netLogoJarsOrDependencies =
-  Option(System.getProperty("netlogo.jar.url"))
-    .orElse(Some("http://ccl.northwestern.edu/netlogo/5.3.0/NetLogo.jar"))
-    .map { url =>
-      import java.io.File
-      import java.net.URI
-      val testsUrl = url.replaceFirst("NetLogo", "NetLogo-tests")
-      if (url.startsWith("file:"))
-        (Seq(new File(new URI(url)), new File(new URI(testsUrl))), Seq())
-      else
-        (Seq(), Seq(
-          "org.nlogo" % "NetLogo" % "5.3.0" from url,
-          "org.nlogo" % "NetLogo-tests" % "5.3.0" % "test" from testsUrl))
-    }.get
+val netLogoJarURL =
+  Option(System.getProperty("netlogo.jar.url")).getOrElse("http://ccl.northwestern.edu/netlogo/5.3.0/NetLogo.jar")
 
-unmanagedJars in Compile ++= netLogoJarsOrDependencies._1
+val netLogoJarsOrDependencies = {
+  import java.io.File
+  import java.net.URI
+  val urlSegments = netLogoJarURL.split("/")
+  val lastSegment = urlSegments.last.replaceFirst("NetLogo", "NetLogo-tests")
+  val testsUrl = (urlSegments.dropRight(1) :+ lastSegment).mkString("/")
+  if (netLogoJarURL.startsWith("file:"))
+    Seq(unmanagedJars in Compile ++= Seq(
+      new File(new URI(netLogoJarURL)), new File(new URI(testsUrl))))
+  else
+    Seq(libraryDependencies ++= Seq(
+      "org.nlogo" % "NetLogo" % "5.3.0" from netLogoJarURL,
+      "org.nlogo" % "NetLogo-tests" % "5.3.0" % "test" from testsUrl))
+}
 
-libraryDependencies ++= netLogoJarsOrDependencies._2
+netLogoJarsOrDependencies
 
 libraryDependencies ++= Seq(
   "gov.nist.math" % "jama" % "1.0.3",
-  "asm" % "asm-all" % "3.3.1" % "test",
+  "org.ow2.asm" % "asm-all" % "5.0.3" % "test",
   "org.scala-lang" % "scala-library" % "2.11.6" % "test",
   "org.picocontainer" % "picocontainer" % "2.13.6" % "test",
-  "org.scalatest" %% "scalatest" % "2.2.1" % "test"
-      )
-
-packageBin in Compile := {
-  val jar = (packageBin in Compile).value
-  val matrixZip = baseDirectory.value / "matrix.zip"
-  if (matrixZip.exists) {
-    IO.unzip(matrixZip, baseDirectory.value)
-    for (jar <- (baseDirectory.value / "matrix" ** "*.jar").get)
-      IO.copyFile(jar, baseDirectory.value / jar.getName)
-    IO.delete(baseDirectory.value / "matrix")
-  }
-  jar
-}
+  "org.scalatest" %% "scalatest" % "2.2.1" % "test")
 
 test in Test := {
   // This way of running tests is *crazy*, but it's how to get this
