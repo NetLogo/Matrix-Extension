@@ -903,7 +903,7 @@ public class MatrixExtension
 
     @Override
     public Syntax getSyntax() {
-      return SyntaxJ.reporterSyntax(new int[]{Syntax.ReporterTaskType(),
+      return SyntaxJ.reporterSyntax(new int[]{Syntax.ReporterType(),
         Syntax.WildcardType() | Syntax.RepeatableType()},
               Syntax.WildcardType(), 2);
     }
