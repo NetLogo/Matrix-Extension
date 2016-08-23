@@ -12,7 +12,7 @@ import org.nlogo.core.LogoList;
 import org.nlogo.api.LogoListBuilder;
 import org.nlogo.api.Reporter;
 import org.nlogo.api.Command;
-import org.nlogo.nvm.ReporterTask;
+import org.nlogo.nvm.AnonymousReporter;
 
 import java.util.Arrays;
 
@@ -914,9 +914,9 @@ public class MatrixExtension
 
       // Get reporter task and the LogoMatrices from the map arguments
       // and put the LogoMatrices in an ArrayList.  Note that we get the task
-      // as a nvm.ReporterTask rather than a api.ReporterTask so that we can
+      // as a nvm.AnonymousReporter rather than a api.AnonymousReporter so that we can
       // apply the formals() method below. (Note the imports, above.)
-      ReporterTask mapFnctn = (ReporterTask)args[0].getReporterTask();
+      AnonymousReporter mapFnctn = (AnonymousReporter)args[0].getReporter();
       double[][][] mats = new double[args.length - 1][][];
       for (int i = 1; i < args.length; i++) {
         mats[i-1] = getMatrixFromArgument(args[i]).matrix.getArray();
