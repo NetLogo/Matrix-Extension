@@ -69,16 +69,16 @@ Map
   extensions [matrix]
   globals [glob1 glob2]
   O> set glob1 matrix:from-row-list [[0 1 2 3 4] [5 6 7 8 9]]
-  (word matrix:map (task [? ^ 2]) glob1) => "{{matrix:  [ [ 0 1 4 9 16 ][ 25 36 49 64 81 ] ]}}"
+  (word matrix:map [ [i] -> i ^ 2 ] glob1) => "{{matrix:  [ [ 0 1 4 9 16 ][ 25 36 49 64 81 ] ]}}"
   O> set glob2 matrix:from-row-list [[9 8 7 6 5] [4 3 2 1 0]]
-  (word (matrix:map (task [?1 + ?2]) glob1  glob2)) => "{{matrix:  [ [ 9 9 9 9 9 ][ 9 9 9 9 9 ] ]}}"
+  word (matrix:map [ [a b] -> a + b ] glob1  glob2) => "{{matrix:  [ [ 9 9 9 9 9 ][ 9 9 9 9 9 ] ]}}"
   O> set glob2 matrix:from-row-list [[9 8 7 6] [4 3 2 1]]
-  (word (matrix:map (task [?1 + ?2]) glob1  glob2)) => ERROR Extension exception: All matrices must have the same dimmensions: the first was 2x5 and another was 2x4.
-  (word (matrix:map (task [?1 + ?3]) glob1  glob2)) => ERROR Extension exception: Task expected 3 matrix inputs but only got 2.
+  word (matrix:map [ [a b] -> a + b ] glob1  glob2) => ERROR Extension exception: All matrices must have the same dimmensions: the first was 2x5 and another was 2x4.
+  word (matrix:map [ [a b c] -> a + b + c ] glob1  glob2) => ERROR Extension exception: Task expected 3 matrix inputs but only got 2.
 
 Regress
   extensions [matrix]
   globals [glob1 glob2]
   O> set glob1 [20 25 28 32 35 39]
-  O> set glob2 n-values length glob1 [?]
+  O> set glob2 n-values length glob1 [ [x] -> x ]
   matrix:regress matrix:from-column-list (list glob1 glob2) => [[20.619047619047638 3.6857142857142824] [0.9953743395474031 238.83333333333331 1.1047619047619044]]
