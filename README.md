@@ -56,7 +56,7 @@ print matrix:pretty-print-text m
 
 print matrix:dimensions m
 => [2 3]
-;;(NOTE: row &amp; column indexing starts at 0, not 1)
+;;(NOTE: row & column indexing starts at 0, not 1)
 print matrix:get m 1 2 ;; what number is in row 1, column 2?
 => 6
 matrix:set m 1 2 10 ;; change the 6 to a 10
