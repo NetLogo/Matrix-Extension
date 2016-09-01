@@ -38,7 +38,9 @@ The matrix extension comes preinstalled.
 
 To use the matrix extension in your model, add a line to the top of your Code tab:
 
+```NetLogo
 extensions [matrix]
+```
 
 If your model already uses other extensions, then it already has an
 `extensions` line in it, so just add `matrix` to the list.
