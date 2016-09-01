@@ -82,6 +82,62 @@ print matrix:to-row-list (matrix:plus m2 m3)
 
 ## Primitives
 
+### Matrix creation and conversion to/from lists
+
+[`matrix:make-constant`](#matrixmake-constant)
+[`matrix:make-identity`](#matrixmake-identity)
+[`matrix:from-row-list`](#matrixfrom-row-list)
+[`matrix:from-column-list`](#matrixfrom-column-list)
+[`matrix:to-row-list`](#matrixto-row-list)
+[`matrix:to-column-list`](#matrixto-column-list)
+[`matrix:copy`](#matrixcopy)
+[`matrix:pretty-print-text`](#matrixpretty-print-text)
+
+### Advanced features
+
+[`matrix:solve`](#matrixsolve)
+[`matrix:forecast-linear-growth`](#matrixforecast-linear-growth)
+[`matrix:forecast-compound-growth`](#matrixforecast-compound-growth)
+[`matrix:forecast-continuous-growth`](#matrixforecast-continuous-growth)
+[`matrix:regress`](#matrixregress)
+
+### Matrix data retrieval and manipulation
+
+[`matrix:get`](#matrixget)
+[`matrix:get-row`](#matrixget-row)
+[`matrix:get-column`](#matrixget-column)
+[`matrix:set`](#matrixset)
+[`matrix:set-row`](#matrixset-row)
+[`matrix:set-column`](#matrixset-column)
+[`matrix:swap-rows`](#matrixswap-rows)
+[`matrix:swap-columns`](#matrixswap-columns)
+[`matrix:set-and-report`](#matrixset-and-report)
+[`matrix:dimensions`](#matrixdimensions)
+[`matrix:submatrix`](#matrixsubmatrix)
+[`matrix:map`](#matrixmap)
+
+### Math operations
+
+[`matrix:times-scalar`](#matrixtimes-scalar)
+[`matrix:times`](#matrixtimes)
+[`matrix:*`](#matrix*)
+[`matrix:times-element-wise`](#matrixtimes-element-wise)
+[`matrix:plus-scalar`](#matrixplus-scalar)
+[`matrix:plus`](#matrixplus)
+[`matrix:+`](#matrix+)
+[`matrix:minus`](#matrixminus)
+[`matrix:-`](#matrix-)
+[`matrix:inverse`](#matrixinverse)
+[`matrix:transpose`](#matrixtranspose)
+[`matrix:real-eigenvalues`](#matrixreal-eigenvalues)
+[`matrix:imaginary-eigenvalues`](#matriximaginary-eigenvalues)
+[`matrix:eigenvectors`](#matrixeigenvectors)
+[`matrix:det`](#matrixdet)
+[`matrix:rank`](#matrixrank)
+[`matrix:trace`](#matrixtrace)
+
+
+
 
 ### `matrix:make-constant`
 
