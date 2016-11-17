@@ -2,7 +2,7 @@ import org.nlogo.build.{ ExtensionDocumentationPlugin, NetLogoExtension }
 
 enablePlugins(NetLogoExtension, ExtensionDocumentationPlugin)
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.12.0"
 
 name := "matrix"
 
@@ -20,10 +20,10 @@ javacOptions ++= Seq("-g", "-deprecation", "-Xlint:all", "-Xlint:-serial", "-Xli
 libraryDependencies ++= Seq(
   "gov.nist.math" % "jama" % "1.0.3",
   "org.ow2.asm" % "asm-all" % "5.0.3" % "test",
-  "org.scala-lang" % "scala-library" % "2.11.6" % "test",
+  "org.scala-lang" % "scala-library" % "2.12.0" % "test",
   "org.picocontainer" % "picocontainer" % "2.13.6" % "test",
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.3" % "test",
-  "org.scalatest" %% "scalatest" % "2.2.1" % "test")
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4" % "test",
+  "org.scalatest" %% "scalatest" % "3.0.0" % "test")
 
 test in Test := {
   // This way of running tests is *crazy*, but it's how to get this
