@@ -35,7 +35,7 @@ If your model already uses other extensions, then it already has an
 `extensions` line in it, so just add `matrix` to the list.
 
 ### Example
-
+{{! escape mustache tags}}{{={| |}=}}
 ```NetLogo
 let m matrix:from-row-list [[1 2 3] [4 5 6]]
 print m

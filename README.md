@@ -484,6 +484,7 @@ linear equations is akin to matrix division. That is, the goal is
 to find a matrix B such that *A* * B = *C*. (For simple
 linear systems, *C* and B can both be 1-dimensional matrices
 -- i.e. vectors). If A is not a square matrix, then a "least squares" solution is returned.
+
 ```NetLogo
 ;; To solve the set of equations x + 3y = 10 and 7x - 4y = 20
 ;; We make our A matrix [[1 3][7 -4]], and our C matrix [[10][20]]
