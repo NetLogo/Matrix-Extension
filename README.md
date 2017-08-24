@@ -542,8 +542,8 @@ Reports a four-element list of the form:
 
 <tt>[ forecast constant growth-proportion R<sup>2</sup> ]</tt>
 
-Whereas [matrix:forecast-linear-growth](#matrix:forecast-linear-growth)
-assumes growth by a constant absolute amount each period, [matrix:forecast-compound-growth](#matrix:forecast-compound-growth)
+Whereas [matrix:forecast-linear-growth](#matrixforecast-linear-growth)
+assumes growth by a constant absolute amount each period, [matrix:forecast-compound-growth](#matrixforecast-compound-growth)
 assumes that Y grows by a constant **proportion** each period.
 The *constant* and *growth-proportion* are the parameters
 of the trend-line
@@ -552,17 +552,17 @@ of the trend-line
 
 Note that the growth proportion is typically interpreted as
 *growth-proportion* = *(1.0 + growth-rate)*. Therefore,
-if [matrix:forecast-compound-growth](#matrix:forecast-compound-growth)
+if [matrix:forecast-compound-growth](#matrixforecast-compound-growth)
 returns a *growth-proportion* of 1.10, that implies that Y
 grows by (1.10 - 1.0) = 10% each period. Note that if growth is
-negative, [matrix:forecast-compound-growth](#matrix:forecast-compound-growth)
+negative, [matrix:forecast-compound-growth](#matrixforecast-compound-growth)
 will return a *growth-proportion* of less than one. E.g., a
 *growth-proportion* of 0.90 implies a growth rate of -10%.
 
 **NOTE:** The compound growth forecast is achieved by taking the
-ln of Y. (See [matrix:regress](#matrix:regress), below.)
+ln of Y. (See [matrix:regress](#matrixregress), below.)
 Because it is impossible to take the natural log of zero or a
-negative number, [matrix:forecast-compound-growth](#matrix:forecast-compound-growth)
+negative number, [matrix:forecast-compound-growth](#matrixforecast-compound-growth)
 will result in an error if it finds a zero or negative number in
 *data-list*.
 
@@ -584,25 +584,25 @@ print matrix:forecast-compound-growth [20 25 28 32 35 39]
 Reports a four-element list of the form:
 
 <tt>[ *forecast* *constant* &nbsp;*growth-rate* &nbsp;*R<sup>2</sup>* ]</tt>.
- Whereas [matrix:forecast-compound-growth](#matrix:forecast-compound-growth)
+ Whereas [matrix:forecast-compound-growth](#matrixforecast-compound-growth)
 assumes discrete time with Y growing by a given proportion each
-finite period of time (e.g., a month or a year), [matrix:forecast-continuous-growth](#matrix:forecast-continuous-growth)
+finite period of time (e.g., a month or a year), [matrix:forecast-continuous-growth](#matrixforecast-continuous-growth)
 assumes that Y is compounded **continuously** (e.g., each second
 or fraction of a second). The *constant* and
 *growth-rate* are the parameters of the trend-line
 
 <tt>Y = *constant* * e<sup>(growth-rate * t)</sup></tt>
 
-[matrix:forecast-continuous-growth](#matrix:forecast-continuous-growth)
-is the "calculus" analog of [matrix:forecast-compound-growth](#matrix:forecast-compound-growth).
+[matrix:forecast-continuous-growth](#matrixforecast-continuous-growth)
+is the "calculus" analog of [matrix:forecast-compound-growth](#matrixforecast-compound-growth).
 The two will normally yield similar (but not identical) results, as
 shown in the example below. *growth-rate* may, of course, be
 negative.
 >
 *NOTE:* The continuous growth forecast is achieved by taking
-the ln of Y. (See [matrix:regress](#matrix:regress),
+the ln of Y. (See [matrix:regress](#matrixregress),
 below.) Because it is impossible to take the natural log of zero or
-a negative number, [matrix:forecast-continuous-growth](#matrix:forecast-continuous-growth)
+a negative number, [matrix:forecast-continuous-growth](#matrixforecast-continuous-growth)
 will result in an error if it finds a zero or negative number in
 *data-list*.
 
@@ -636,10 +636,10 @@ first element is a list containing the regression constant followed
 by the coefficients on each of the independent variables. The
 second element is a 3-element list containing the R<sup>2</sup>
 statistic, the total sum of squares, and the residual sum of
-squares. The following code example shows how the [matrix:regress](#matrix:regress) primitive can be used to
+squares. The following code example shows how the [matrix:regress](#matrixregress) primitive can be used to
 perform the same function as the code examples shown in the
 matrix:forecast-*-growth primitives above. (However, keep in mind
-that the [matrix:regress](#matrix:regress) primitive is
+that the [matrix:regress](#matrixregress) primitive is
 more powerful than this, and can have many more independent
 variables in the regression, as indicated in the fourth example
 below.)
