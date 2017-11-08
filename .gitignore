@@ -1,5 +1,7 @@
 /Jama-*.jar
+/jama-*.jar
 /Jama-*.jar.pack.gz
+/jama-*.jar.pack.gz
 /NetLogo.jar
 /NetLogoLite.jar
 /classes/
