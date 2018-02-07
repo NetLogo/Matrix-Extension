@@ -37,7 +37,7 @@ test in Test := {
     matrixJar -> matrixDir / matrixJar.getName,
     testFile  -> matrixDir / testFile.getName
   ))
-  val forkOptions = ForkOptions(workingDirectory = Some(testDir))
+  val forkOptions = ForkOptions().withWorkingDirectory(Some(testDir))
   val allDependencies = Attributed.data((dependencyClasspath in Compile).value ++ (dependencyClasspath in Test).value)
   val netLogoTestsJar = allDependencies.find(j => (j.getName.contains("netlogo") || j.getName.contains("NetLogo")) &&
     j.getName.contains("test")).get
