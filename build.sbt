@@ -6,6 +6,8 @@ scalaVersion := "2.12.0"
 
 name := "matrix"
 
+version := "1.1.0"
+
 netLogoClassManager := "org.nlogo.extensions.matrix.MatrixExtension"
 
 netLogoTarget :=
