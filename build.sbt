@@ -21,6 +21,7 @@ javacOptions ++= Seq("-g", "-deprecation", "-Xlint:all", "-Xlint:-serial", "-Xli
 
 libraryDependencies ++= Seq(
   "gov.nist.math" % "jama" % "1.0.3",
+  "com.typesafe" % "config" % "1.3.1" % "test",
   "org.ow2.asm" % "asm-all" % "5.0.3" % "test",
   "org.scala-lang" % "scala-library" % "2.12.0" % "test",
   "org.picocontainer" % "picocontainer" % "2.13.6" % "test",
