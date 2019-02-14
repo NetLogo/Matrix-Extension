@@ -2,7 +2,7 @@ import org.nlogo.build.{ ExtensionDocumentationPlugin, NetLogoExtension }
 
 enablePlugins(NetLogoExtension, ExtensionDocumentationPlugin)
 
-scalaVersion := "2.12.0"
+scalaVersion := "2.12.8"
 
 name := "matrix"
 
