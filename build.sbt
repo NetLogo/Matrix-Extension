@@ -56,4 +56,4 @@ test in Test := {
     sys.error("tests did not complete successfully")
 }
 
-netLogoVersion := "6.0.2-M1"
+netLogoVersion := "6.0.4-9328ba6"
