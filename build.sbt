@@ -6,7 +6,7 @@ scalaVersion := "2.12.8"
 
 name := "matrix"
 
-version := "1.1.0"
+version := "1.1.1"
 
 netLogoClassManager := "org.nlogo.extensions.matrix.MatrixExtension"
 
@@ -57,4 +57,4 @@ test in Test := {
     sys.error("tests did not complete successfully")
 }
 
-netLogoVersion := "6.0.4-9328ba6"
+netLogoVersion := "6.1.0-RC1"
