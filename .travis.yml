@@ -7,9 +7,9 @@ cache:
   - $HOME/.sbt/boot
   - $HOME/.sbt/launchers
 
-jdk: oraclejdk8
+jdk: openjdk8
 language: scala
-scala: 2.11.7
+scala: 2.12.12
 
 install:
   - sbt update
