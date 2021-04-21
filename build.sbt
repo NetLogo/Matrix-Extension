@@ -55,4 +55,5 @@ test in Test := {
     sys.error("tests did not complete successfully")
 }
 
-netLogoVersion := "6.1.1-c82c397"
+resolvers      += "netlogo" at "https://dl.cloudsmith.io/public/netlogo/netlogo/maven/"
+netLogoVersion := "6.2.0-d27b502"
