@@ -13,6 +13,7 @@ scalaVersion        := "2.12.12"
 scalaSource in Test := baseDirectory.value / "src" / "test"
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-Xlint", "-Xfatal-warnings", "-encoding", "us-ascii")
 
+javaSource in Compile := baseDirectory.value / "src" / "main"
 javacOptions  ++= Seq("-g", "-deprecation", "-Xlint:all", "-Xlint:-serial", "-Xlint:-path", "-encoding", "us-ascii")
 
 libraryDependencies ++= Seq(
