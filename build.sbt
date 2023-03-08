@@ -7,13 +7,13 @@ version    := "1.1.2"
 isSnapshot := true
 
 netLogoClassManager := "org.nlogo.extensions.matrix.MatrixExtension"
-netLogoVersion      := "6.2.2"
+netLogoVersion      := "6.3.0"
 
 scalaVersion        := "2.12.12"
-scalaSource in Test := baseDirectory.value / "src" / "test"
+Test / scalaSource := baseDirectory.value / "src" / "test"
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-Xlint", "-Xfatal-warnings", "-encoding", "us-ascii", "-release", "11")
 
-javaSource in Compile := baseDirectory.value / "src" / "main"
+Compile / javaSource := baseDirectory.value / "src" / "main"
 javacOptions  ++= Seq("-g", "-deprecation", "-Xlint:all", "-Xlint:-serial", "-Xlint:-path", "-encoding", "us-ascii", "--release", "11")
 
 libraryDependencies ++= Seq(
