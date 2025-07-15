@@ -19,12 +19,6 @@ import java.util.Arrays;
 public class MatrixExtension
     extends org.nlogo.api.DefaultClassManager {
 
-  @Override
-  public java.util.List<String> additionalJars() {
-    java.util.List<String> list = new java.util.ArrayList<String>();
-    list.add("Jama-1.0.3.jar");
-    return list;
-  }
   // the WeakHashMap here may seem a bit odd, but it is apparently the easiest way to handle things
   // for explanation, see the comment in ArrayExtension.java in the Array extension.
   private static final java.util.WeakHashMap<LogoMatrix, Long> matrices = new java.util.WeakHashMap<LogoMatrix, Long>();
