@@ -11,7 +11,7 @@ netLogoVersion      := "7.0.0-beta1-c8d671e"
 
 scalaVersion        := "3.7.0"
 Test / scalaSource := baseDirectory.value / "src" / "test"
-scalacOptions ++= Seq("-deprecation", "-unchecked", "-Xlint", "-Xfatal-warnings", "-encoding", "us-ascii", "-release", "11")
+scalacOptions ++= Seq("-deprecation", "-unchecked", "-Xfatal-warnings", "-encoding", "us-ascii", "-release", "11")
 
 Compile / javaSource := baseDirectory.value / "src" / "main"
 javacOptions  ++= Seq("-g", "-deprecation", "-encoding", "us-ascii", "--release", "11")
