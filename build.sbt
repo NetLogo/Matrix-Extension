@@ -16,6 +16,8 @@ scalacOptions ++= Seq("-deprecation", "-unchecked", "-Xfatal-warnings", "-encodi
 Compile / javaSource := baseDirectory.value / "src" / "main"
 javacOptions  ++= Seq("-g", "-deprecation", "-encoding", "us-ascii", "--release", "11")
 
+resolvers += "jitpack" at "https://jitpack.io"
+
 libraryDependencies ++= Seq(
   "gov.nist.math" % "jama" % "1.0.3"
 )
