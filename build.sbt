@@ -3,7 +3,7 @@ import org.nlogo.build.{ ExtensionDocumentationPlugin, NetLogoExtension }
 enablePlugins(NetLogoExtension, ExtensionDocumentationPlugin)
 
 name       := "matrix"
-version    := "1.2.0"
+version    := "1.2.1"
 isSnapshot := true
 
 netLogoClassManager := "org.nlogo.extensions.matrix.MatrixExtension"
