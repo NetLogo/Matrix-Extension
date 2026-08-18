@@ -313,7 +313,7 @@ print matrix:submatrix m 0 1 2 3 ; matrix, row-start, col-start, row-end, col-en
 
 
 Reports a new matrix which results from applying <i>reporter</i>
-(an anonymous reporter or the name of a reporter)
+(an arrow reporter or the name of a reporter)
 to each of the elements of the given matrix. For example,
 
 ```NetLogo
