@@ -348,7 +348,7 @@ primitives:
     description: |
 
       Reports a new matrix which results from applying <i>reporter</i>
-      (an anonymous reporter or the name of a reporter)
+      (an arrow reporter or the name of a reporter)
       to each of the elements of the given matrix. For example,
 
       ```NetLogo
